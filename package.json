@@ -3,12 +3,32 @@
   "name": "radio-node",
   "version": "0.0.1",
   "description": "Radioteria Streaming Node",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "bin": {
+    "radio-node": "dist/bin/radio-node.js"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "babel-node": "babel-node",
+    "flow": "flow",
+    "flow-typed": "flow-typed",
+    "eslint": "eslint",
+    "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
+    "prepublish": "yarn run build"
   },
   "author": "Roman Lakhtadyr <roman.lakhtadyr@gmail.com>",
   "devDependencies": {
-    "yarn": "^0.21.3"
+    "babel-cli": "*",
+    "babel-core": "*",
+    "babel-eslint": "*",
+    "babel-plugin-transform-runtime": "*",
+    "babel-preset-env": "*",
+    "babel-preset-flow": "*",
+    "babel-preset-stage-0": "*",
+    "eslint": "*",
+    "flow-bin": "^0.42.0",
+    "flow-typed": "*",
+    "jest": "*",
+    "yarn": "*"
   }
 }
