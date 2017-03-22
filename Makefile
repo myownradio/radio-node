@@ -1,4 +1,4 @@
-install: install-deps
+install: install-deps install-flow-typed
 
 run:
 	npm run babel-node -- 'src/bin/hexlet.js' 10
@@ -6,20 +6,23 @@ run:
 install-deps:
 	yarn
 
+install-flow-typed:
+	yarn run flow-typed install
+
 build: clean
-	npm run build
+	yarn run build
 
 test:
-	npm test
+	yarn test
 
-check-types:
-	npm run flow
+typecheck:
+	yarn run flow
 
 lint:
-	npm run eslint -- src test
+	yarn run eslint -- src __test__
 
 publish:
-	npm publish
+	yarn publish
 
 clean:
 	rm -rf dist

@@ -5,6 +5,7 @@ plugins: [jest, flowtype]
 env:
   node: true
   jest: true
+  jasmine: true
 
 parser: babel-eslint
 
