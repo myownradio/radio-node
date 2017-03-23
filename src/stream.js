@@ -1,7 +1,7 @@
 // @flow
 
 import ffmpeg from 'fluent-ffmpeg';
-import { Transform, Writable } from 'stream';
+import { PassThrough, Writable } from 'stream';
 import async from 'async';
 
 import type { FetchResult, Fetcher } from './fetcher';
@@ -35,6 +35,7 @@ export default class Stream {
       .then((data: FetchResult) => {
         console.log(`Now playing ${data.offset} ${data.title}`);
         ffmpeg(data.url)
+          .native()
           .seekInput(String(data.offset / 1000))
           .audioCodec('pcm_s16le')
           .audioChannels(2)
@@ -55,17 +56,17 @@ export default class Stream {
       },
     });
 
-    const transform = throttle(176400);
+    const pt = new PassThrough();
 
     console.log('Starting ffmpeg');
-    ffmpeg(transform)
+    ffmpeg(pt)
       .inputOptions(['-ac 2', '-ar 44100'])
       .inputFormat('s16le')
       .outputFormat('mp3')
       .audioFilter('compand=0 0:1 1:-90/-900 -70/-70 -21/-21 0/-15:0.01:12:0:0')
       .pipe(ws, { end: true });
 
-    this.pass(transform);
+    this.pass(pt);
   }
 
 
