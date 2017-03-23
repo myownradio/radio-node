@@ -6,6 +6,7 @@ import async from 'async';
 
 import type { FetchResult, Fetcher } from './fetcher';
 import fetcher from './fetcher';
+import { throttle } from './flow/transformers';
 
 export default class Stream {
   listeners: Array<express$Response>;
@@ -30,11 +31,10 @@ export default class Stream {
 
   pass(to: stream$Writable) {
     console.log('Fetching now playing...');
-    this.fetch('peaceful-radio')
+    this.fetch('wave-of-relax')
       .then((data: FetchResult) => {
         console.log(`Now playing ${data.offset} ${data.title}`);
         ffmpeg(data.url)
-          .native()
           .seekInput(String(data.offset / 1000))
           .audioCodec('pcm_s16le')
           .audioChannels(2)
@@ -55,11 +55,7 @@ export default class Stream {
       },
     });
 
-    const transform = new Transform({
-      transform(chunk, enc, cb) {
-        cb(null, chunk);
-      },
-    });
+    const transform = throttle(176400);
 
     console.log('Starting ffmpeg');
     ffmpeg(transform)
