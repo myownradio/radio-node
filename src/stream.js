@@ -1,7 +1,8 @@
 // @flow
 
 import ffmpeg from 'fluent-ffmpeg';
-import stream from 'stream-wrapper';
+import { Transform, Writable } from 'stream';
+import fs from 'fs';
 
 export default class Stream {
   listeners: Array<express$Response>;
@@ -22,20 +23,36 @@ export default class Stream {
     this.listeners.push(output);
   }
 
+  pass(to: stream$Writable) {
+    const file = fs.createReadStream(this.file);
+    // file.on('end', () => this.send(to));
+    file.pipe(to);
+  }
+
   run() {
-    const ws = stream.writable((chunk, enc, cb) => {
-      this.listeners.forEach(l => l.write(chunk, enc));
-      cb();
+    const that = this;
+    const ws = new Writable({
+      write(chunk, encoding, callback) {
+        that.listeners.forEach(l => l.write(chunk, encoding));
+        callback();
+      },
     });
 
-    console.log('Starting');
-    ffmpeg(this.file)
+    const transform = new Transform({
+      transform(chunk, enc, cb) {
+        cb(null, chunk);
+        //this.push(chunk, enc, cb);
+      },
+    });
+
+    console.log('Starting ffmpeg');
+    ffmpeg(transform)
       .native()
       .outputFormat('mp3')
-      .on('end', () => this.run())
-      .on('error', (err) => {
-        console.log(`an error happened: ${err.message}`);
-      })
       .pipe(ws, { end: true });
+
+    this.pass(transform);
   }
+
+
 }
