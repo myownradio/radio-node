@@ -37,8 +37,10 @@
     "jest": "~19.0.2"
   },
   "dependencies": {
+    "async": "^2.1.5",
     "express": "^4.15.2",
     "fluent-ffmpeg": "^2.1.0",
-    "shelljs": "^0.7.7"
+    "shelljs": "^0.7.7",
+    "stream-wrapper": "^0.1.2"
   }
 }
