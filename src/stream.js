@@ -4,16 +4,18 @@ import ffmpeg from 'fluent-ffmpeg';
 import { Transform, Writable } from 'stream';
 import async from 'async';
 
-import type { FetchResult } from '../src/radio/mor';
-import fetch from '../src/radio/mor';
+import type { FetchResult, Fetcher } from './fetcher';
+import fetcher from './fetcher';
 
 export default class Stream {
   listeners: Array<express$Response>;
   file: string;
+  fetch: Fetcher;
 
   constructor(fileToStream: string) {
     this.listeners = [];
     this.file = fileToStream;
+    this.fetch = fetcher('mor');
     this.run();
   }
 
@@ -28,18 +30,21 @@ export default class Stream {
 
   pass(to: stream$Writable) {
     console.log('Fetching now playing...');
-    fetch('peaceful-radio').then((data: FetchResult) => {
-      console.log(`Now playing ${data.title}`);
-      ffmpeg(data.url)
-        .native()
-        .seekInput(data.offset / 1000)
-        .audioCodec('pcm_s16le')
-        .audioChannels(2)
-        .audioFrequency(44100)
-        .outputFormat('s16le')
-        .on('end', () => this.pass(to))
-        .pipe(to, { end: false });
-    });
+    this.fetch('peaceful-radio')
+      .then((data: FetchResult) => {
+        console.log(`Now playing ${data.offset} ${data.title}`);
+        ffmpeg(data.url)
+          .native()
+          .seekInput(String(data.offset / 1000))
+          .audioCodec('pcm_s16le')
+          .audioChannels(2)
+          .audioFrequency(44100)
+          .outputFormat('s16le')
+          .audioFilter('afade=t=in:st=0:d=1')
+          .on('end', () => this.pass(to))
+          .pipe(to, { end: false });
+      })
+      .catch(err => console.error(err));
   }
 
   run() {
@@ -61,6 +66,7 @@ export default class Stream {
       .inputOptions(['-ac 2', '-ar 44100'])
       .inputFormat('s16le')
       .outputFormat('mp3')
+      .audioFilter('compand=0 0:1 1:-90/-900 -70/-70 -21/-21 0/-15:0.01:12:0:0')
       .pipe(ws, { end: true });
 
     this.pass(transform);
