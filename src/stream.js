@@ -28,7 +28,7 @@ export default class Stream {
 
   pass(to: stream$Writable) {
     console.log('Fetching now playing...');
-    fetch('35').then((data: FetchResult) => {
+    fetch('peaceful-radio').then((data: FetchResult) => {
       console.log(`Now playing ${data.title}`);
       ffmpeg(data.url)
         .native()
