@@ -6,7 +6,6 @@ import async from 'async';
 
 import type { FetchResult, Fetcher } from './fetcher';
 import fetcher from './fetcher';
-import { throttle } from './flow/transformers';
 
 export default class Stream {
   listeners: Array<express$Response>;
@@ -16,7 +15,7 @@ export default class Stream {
   constructor(fileToStream: string) {
     this.listeners = [];
     this.file = fileToStream;
-    this.fetch = fetcher('mor');
+    this.fetch = fetcher('fake');
     this.run();
   }
 
@@ -42,7 +41,11 @@ export default class Stream {
           .audioFrequency(44100)
           .outputFormat('s16le')
           .audioFilter('afade=t=in:st=0:d=1')
-          .on('end', () => this.pass(to))
+          .once('end', () => {
+            to.removeAllListeners('error');
+            to.removeAllListeners('close');
+            this.pass(to);
+          })
           .pipe(to, { end: false });
       })
       .catch(err => console.error(err));
