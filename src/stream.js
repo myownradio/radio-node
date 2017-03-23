@@ -25,8 +25,8 @@ export default class Stream {
 
   pass(to: stream$Writable) {
     const file = fs.createReadStream(this.file);
-    // file.on('end', () => this.send(to));
-    file.pipe(to);
+    file.on('end', () => this.pass(to));
+    file.pipe(to, { end: false });
   }
 
   run() {
@@ -41,7 +41,6 @@ export default class Stream {
     const transform = new Transform({
       transform(chunk, enc, cb) {
         cb(null, chunk);
-        //this.push(chunk, enc, cb);
       },
     });
 
