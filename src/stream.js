@@ -14,10 +14,11 @@ export default class Stream {
   }
 
   subscribe(output: express$Response) {
-    output.on('error', () => {
-      console.log('client down');
+    output.on('close', () => {
+      console.log('listener gone');
       this.listeners = this.listeners.filter(listener => listener !== output);
     });
+    console.log('new listener');
     this.listeners.push(output);
   }
 
