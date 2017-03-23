@@ -42,7 +42,6 @@
     "fluent-ffmpeg": "^2.1.0",
     "node-rest-client": "^3.0.7",
     "shelljs": "^0.7.7",
-    "stream-wrapper": "^0.1.2",
     "throttle": "^1.0.3"
   }
 }
