@@ -34,6 +34,9 @@ export default class Stream {
         .native()
         .seekInput(data.offset / 1000)
         .outputFormat('s16le')
+        .audioCodec('pcm_s16le')
+        .audioChannels(2)
+        .audioFrequency(44100)
         .on('end', () => this.pass(to))
         .pipe(to, { end: false });
     });
