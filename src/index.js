@@ -23,7 +23,8 @@ const startServer = (port: number) => {
   });
 
   app.get('/channel/:channelId', (req: express$Request, res: express$Response) => {
-    res.json(req.params);
+    const { channelId } = req.params;
+    res.json({ channelId });
   });
 
   app.listen(port);

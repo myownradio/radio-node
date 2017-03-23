@@ -2,6 +2,7 @@
 
 import ffmpeg from 'fluent-ffmpeg';
 import { Transform, Writable } from 'stream';
+import async from 'async';
 
 import type { FetchResult } from '../src/radio/mor';
 import fetch from '../src/radio/mor';
@@ -28,6 +29,7 @@ export default class Stream {
   pass(to: stream$Writable) {
     fetch('35').then((data: FetchResult) => {
       ffmpeg(data.url)
+        .native()
         .seekInput(data.offset / 1000)
         .outputFormat('mp3')
         .on('end', () => this.pass(to))
@@ -39,8 +41,7 @@ export default class Stream {
     const that = this;
     const ws = new Writable({
       write(chunk, encoding, callback) {
-        that.listeners.forEach(l => l.write(chunk, encoding));
-        callback();
+        async.each(that.listeners, (l, next) => l.write(chunk, encoding, next), callback);
       },
     });
 
@@ -52,7 +53,6 @@ export default class Stream {
 
     console.log('Starting ffmpeg');
     ffmpeg(transform)
-      .native()
       .outputFormat('mp3')
       .pipe(ws, { end: true });
 
