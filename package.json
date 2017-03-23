@@ -40,6 +40,7 @@
     "async": "^2.1.5",
     "express": "^4.15.2",
     "fluent-ffmpeg": "^2.1.0",
+    "node-rest-client": "^3.0.7",
     "shelljs": "^0.7.7",
     "stream-wrapper": "^0.1.2"
   }

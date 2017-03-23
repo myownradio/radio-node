@@ -2,7 +2,9 @@
 
 import ffmpeg from 'fluent-ffmpeg';
 import { Transform, Writable } from 'stream';
-import fs from 'fs';
+
+import type { FetchResult } from '../src/radio/mor';
+import fetch from '../src/radio/mor';
 
 export default class Stream {
   listeners: Array<express$Response>;
@@ -24,9 +26,13 @@ export default class Stream {
   }
 
   pass(to: stream$Writable) {
-    const file = fs.createReadStream(this.file);
-    file.on('end', () => this.pass(to));
-    file.pipe(to, { end: false });
+    fetch('35').then((data: FetchResult) => {
+      ffmpeg(data.url)
+        .seekInput(data.offset / 1000)
+        .outputFormat('mp3')
+        .on('end', () => this.pass(to))
+        .pipe(to, { end: false });
+    });
   }
 
   run() {
