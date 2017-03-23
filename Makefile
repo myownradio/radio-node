@@ -27,4 +27,10 @@ publish:
 clean:
 	rm -rf dist
 
+start:
+	yarn run babel-node src/bin/radio-node.js
+
+start-watch:
+	yarn run babel-watch src/bin/radio-node.js
+
 .PHONY: test

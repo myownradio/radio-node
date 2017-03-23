@@ -1,3 +1,5 @@
 #!/usr/bin/env node
 
-console.log('Hello, World!');
+import startApp from '../';
+
+startApp(6767);
