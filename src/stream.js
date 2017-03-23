@@ -27,11 +27,13 @@ export default class Stream {
   }
 
   pass(to: stream$Writable) {
+    console.log('Fetching now playing...');
     fetch('35').then((data: FetchResult) => {
+      console.log(`Now playing ${data.title}`);
       ffmpeg(data.url)
         .native()
         .seekInput(data.offset / 1000)
-        .outputFormat('mp3')
+        .outputFormat('s16le')
         .on('end', () => this.pass(to))
         .pipe(to, { end: false });
     });
@@ -53,6 +55,7 @@ export default class Stream {
 
     console.log('Starting ffmpeg');
     ffmpeg(transform)
+      .inputFormat('s16le')
       .outputFormat('mp3')
       .pipe(ws, { end: true });
 
