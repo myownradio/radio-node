@@ -9,13 +9,11 @@ import fetcher from './fetcher';
 
 export default class Stream {
   listeners: Array<express$Response>;
-  file: string;
   fetch: Fetcher;
 
-  constructor(fileToStream: string) {
+  constructor(backend: string) {
     this.listeners = [];
-    this.file = fileToStream;
-    this.fetch = fetcher('fake');
+    this.fetch = fetcher(backend);
     this.run();
   }
 

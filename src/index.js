@@ -4,9 +4,15 @@ import express from 'express';
 
 import RadioStreamer from './stream';
 
-const startServer = (port: number) => {
+const startServer = (port: number, backend: string) => {
+
+  console.log(`Server will listen on port: ${port}`);
+  console.log(`Selected backend: ${backend}`);
+  console.log();
+
   const app: express$Application = express();
-  const streamer = new RadioStreamer('__tests__/__fixtures__/demo.mp3');
+  const streamer = new RadioStreamer(backend);
+
 
   app.get('/', (req: express$Request, res: express$Response) => {
     res.send('Hello, World!');

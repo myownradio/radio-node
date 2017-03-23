@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+import { config } from 'dotenv';
 import startApp from '../';
 
-startApp(6767);
+config();
+
+startApp(process.env.PORT, process.env.BACKEND);
