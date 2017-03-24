@@ -15,6 +15,16 @@ export default class MultiWritable extends Writable {
     return true;
   }
 
+  _closeClients() {
+    this.clients.forEach(c => c.end());
+    this.clients = [];
+  }
+
+  close() {
+    this._closeClients();
+    this.end();
+  }
+
   removeClient(client: stream$Writable): void {
     this.clients = this.clients.filter(c => c !== client);
   }
@@ -24,7 +34,7 @@ export default class MultiWritable extends Writable {
     this.clients = [...this.clients, client];
   }
 
-  _bindRemoveCases = (client: stream$Writable): void => {
+  _bindRemoveCases(client: stream$Writable): void {
     client.on('close', () => this.removeClient(client));
     client.on('error', () => this.removeClient(client));
   }

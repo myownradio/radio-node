@@ -19,10 +19,7 @@ export default class Streamer {
   }
 
   stop() {
-    this.closeClients();
-  }
-
-  closeClients() {
-    this.multiWritable.end();
+    this.multiWritable.close();
+    this.encoder.close();
   }
 }
