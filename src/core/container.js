@@ -1,27 +1,25 @@
 // @flow
 
-import startStreamer from './streamer';
+import { Streamer } from './streamer';
 
-import type { Backend } from '../fetcher';
-import type { Streamer } from './streamer';
+export default class Container {
+  backend: string;
+  streamers: { [key: string]: Streamer } = {};
 
-type Container = { [key: string]: Streamer };
+  constructor(backend: string) {
+    this.backend = backend;
+  }
 
+  start(channelId: string) {
+    this.streamers[channelId] = new Streamer(channelId, this.backend);
+  }
 
-export default (backend: Backend) => {
-  const streamers: Container = {};
+  stop(channelId: string) {
+    this.streamers[channelId].stop();
+    delete this.streamers[channelId];
+  }
 
-  const startStreaming = (channelId: string): void => {
-    const streamer = startStreamer(channelId, backend);
-    streamers[channelId] = streamer;
-  };
-
-  const stopStreaming = (channelId: string): void => {
-    streamers.get(channelId).stop();
-    delete streamers.delete(channelId);
-  };
-
-  const isStreaming = (channelId: string): boolean => channelId in streamers;
-
-  return { startStreaming, stopStreaming, isStreaming };
-};
+  isRunning(channelId: string) {
+    return channelId in this.streamers;
+  }
+}
