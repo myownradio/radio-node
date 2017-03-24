@@ -5,7 +5,6 @@ import express from 'express';
 import RadioStreamer from './stream';
 
 const startServer = (port: number, backend: string) => {
-
   console.log(`Server will listen on port: ${port}`);
   console.log(`Selected backend: ${backend}`);
   console.log();
