@@ -1,6 +1,6 @@
 // @flow
 
-import { Streamer } from './streamer';
+import Streamer from './streamer';
 
 export default class Container {
   backend: string;
