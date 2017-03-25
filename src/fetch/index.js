@@ -13,7 +13,7 @@ export type Backend = "fake" | "mor";
 
 export type Fetcher = (string) => Promise<FetchResult>;
 
-const getFetcher = (type: string): Fetcher => {
+const getFetch = (type: string): Fetcher => {
   switch (type) {
     case 'fake':
       return fake;
@@ -24,4 +24,4 @@ const getFetcher = (type: string): Fetcher => {
   }
 };
 
-export default getFetcher;
+export default getFetch;

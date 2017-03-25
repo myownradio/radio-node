@@ -2,11 +2,7 @@
 
 import { Client } from 'node-rest-client';
 
-export type FetchResult = {
-  offset: number,
-  title: string,
-  url: string,
-};
+import type { FetchResult } from './';
 
 const endpoint: string = 'http://myownradio.biz/api/v0/stream/${channelId}/now';
 

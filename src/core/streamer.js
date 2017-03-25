@@ -2,24 +2,17 @@
 
 import MultiWritable from './multiwritable';
 import Encoder from './encoder';
+import player from './player';
 
-export default class Streamer {
-  channelId: string;
-  backend: string;
+export default (backend: string, channelId: string) => {
+  const multiWritable = new MultiWritable();
+  const encoder = new Encoder(multiWritable);
+  const player = player();
 
-  multiWritable: MultiWritable;
-  encoder: Encoder;
-
-  constructor(channelId: string, backend: string) {
-    this.channelId = channelId;
-    this.backend = backend;
-
-    this.multiWritable = new MultiWritable();
-    this.encoder = new Encoder(this.multiWritable);
-  }
-
-  stop() {
-    this.multiWritable.close();
-    this.encoder.close();
-  }
-}
+  return {
+    stop() {
+      this.multiWritable.close();
+      this.encoder.close();
+    },
+  };
+};

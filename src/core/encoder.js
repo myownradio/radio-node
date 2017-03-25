@@ -20,6 +20,11 @@ export default class Encoder extends Writable {
     return this.wire.write(chunk, encoding, callback);
   }
 
+  end(chunk: any, encoding: any, callback: any) {
+    super.end(chunk, encoding, callback);
+    this.wire.end();
+  }
+
   close() {
     this.wire.end();
   }

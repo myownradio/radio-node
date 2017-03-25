@@ -2,24 +2,21 @@
 
 import Streamer from './streamer';
 
-export default class Container {
-  backend: string;
-  streamers: { [key: string]: Streamer } = {};
+export default (backend: string) => {
+  const streamers: { [key: string]: Streamer } = {};
 
-  constructor(backend: string) {
-    this.backend = backend;
-  }
+  return {
+    start(channelId: string) {
+      streamers[channelId] = new Streamer(channelId, backend);
+    },
 
-  start(channelId: string) {
-    this.streamers[channelId] = new Streamer(channelId, this.backend);
-  }
+    stop(channelId: string) {
+      this.streamers[channelId].stop();
+      delete streamers[channelId];
+    },
 
-  stop(channelId: string) {
-    this.streamers[channelId].stop();
-    delete this.streamers[channelId];
-  }
-
-  isRunning(channelId: string) {
-    return channelId in this.streamers;
-  }
-}
+    isRunning(channelId: string) {
+      return channelId in streamers;
+    },
+  };
+};
