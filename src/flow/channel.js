@@ -38,4 +38,4 @@ export const addListener = (client: express$Response, channelId: string) => {
   channels[channelId].addClient(client);
 };
 
-export default { addListener };
+export default { addClient };
