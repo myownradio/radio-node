@@ -4,7 +4,7 @@ import ffmpeg from 'fluent-ffmpeg';
 import { PassThrough, Writable } from 'stream';
 import async from 'async';
 
-import wrap from './core/stream-wrap';
+import { pass } from './stream/stream-utils';
 import type { FetchResult, Fetcher } from './fetcher';
 import fetcher from './fetcher';
 
@@ -47,7 +47,7 @@ export default class Stream {
             console.error(error);
             setTimeout(() => this.pass(to), 1000);
           })
-          .pipe(wrap(to));
+          .pipe(pass(to));
       })
       .catch(err => console.error(err));
   }
