@@ -4,6 +4,7 @@ import ffmpeg from 'fluent-ffmpeg';
 import { PassThrough, Writable } from 'stream';
 import async from 'async';
 
+import wrap from './core/stream-wrap';
 import type { FetchResult, Fetcher } from './fetcher';
 import fetcher from './fetcher';
 
@@ -40,11 +41,13 @@ export default class Stream {
           .outputFormat('s16le')
           .audioFilter('afade=t=in:st=0:d=1')
           .once('end', () => {
-            to.removeAllListeners('error');
-            to.removeAllListeners('close');
             this.pass(to);
           })
-          .pipe(to, { end: false });
+          .on('error', (error) => {
+            console.error(error);
+            setTimeout(() => this.pass(to), 1000);
+          })
+          .pipe(wrap(to));
       })
       .catch(err => console.error(err));
   }
