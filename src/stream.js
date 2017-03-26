@@ -4,9 +4,9 @@ import ffmpeg from 'fluent-ffmpeg';
 import { PassThrough, Writable } from 'stream';
 import async from 'async';
 
-import { pass } from './stream/stream-utils';
-import type { FetchResult, Fetcher } from './fetcher';
-import fetcher from './fetcher';
+import { pass } from './utils/stream-utils';
+import type { FetchResult, Fetcher } from './fetch';
+import fetcher from './fetch';
 
 export default class Stream {
   listeners: Array<express$Response>;
@@ -29,7 +29,7 @@ export default class Stream {
 
   pass(to: stream$Writable) {
     console.log('Fetching now playing...');
-    this.fetch('wave-of-relax')
+    this.fetch('indie')
       .then((data: FetchResult) => {
         console.log(`Now playing ${data.offset} ${data.title}`);
         ffmpeg(data.url)
