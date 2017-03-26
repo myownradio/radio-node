@@ -34,8 +34,7 @@ export default class Stream {
       .then((data: FetchResult) => {
         console.log(`Now playing ${data.offset} ${data.title}`);
         let terminator;
-        const { stream } = decode(data.url, data.offset);
-        stream
+        decode(data.url, data.offset)
           .on('end', () => {
             clearTimeout(terminator);
             this.pass(to);
