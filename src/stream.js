@@ -30,7 +30,7 @@ export default class Stream {
 
   pass(to: stream$Writable) {
     console.log('Fetching now playing...');
-    this.fetch('indie')
+    this.fetch('104')
       .then((data: FetchResult) => {
         console.log(`Now playing ${data.offset} ${data.title}`);
         decode(data.url, data.offset)
