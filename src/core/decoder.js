@@ -12,7 +12,10 @@ export const AUDIO_CODEC = 'pcm_s16le';
 
 export const decode = (url: string, offset: number): stream$Readable => {
   const out = new PassThrough();
-  ffmpeg(url)
+  const onError = (err, stdout, stderr) =>
+    out.emit('error', { err, stdout, stderr });
+
+  return ffmpeg(url)
     .native()
     .seekInput(offset / 1000)
     .audioCodec(AUDIO_CODEC)
@@ -20,9 +23,8 @@ export const decode = (url: string, offset: number): stream$Readable => {
     .audioFrequency(DECODER_FREQUENCY)
     .outputFormat(DECODER_FORMAT)
     .audioFilter(FADEIN_FILTER)
-    .on('error', (err, stdout, stderr) => out.emit('error', { err, stdout, stderr }))
+    .on('error', onError)
     .pipe(out);
-  return out;
 };
 
 export default { decode };
