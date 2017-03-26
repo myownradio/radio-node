@@ -33,13 +33,17 @@ export default class Stream {
     this.fetch('104')
       .then((data: FetchResult) => {
         console.log(`Now playing ${data.offset} ${data.title}`);
-        const readable = decode(data.url, data.offset)
-          .on('end', () => this.pass(to))
+        let terminator;
+        const { stream } = decode(data.url, data.offset);
+        stream
+          .on('end', () => {
+            clearTimeout(terminator);
+            this.pass(to);
+          })
           .on('error', () => {
             console.error('Decoder exited with error.');
-            this.pass(to);
-          });
-        readable.pipe(pass(to));
+          })
+          .pipe(pass(to));
         console.log('----');
       })
       .catch(err => console.error(err));
