@@ -7,6 +7,7 @@ import async from 'async';
 import { pass } from './utils/stream-utils';
 import type { FetchResult, Fetcher } from './fetch';
 import fetcher from './fetch';
+import { decode } from './core/decoder';
 
 export default class Stream {
   listeners: Array<express$Response>;
@@ -32,22 +33,11 @@ export default class Stream {
     this.fetch('indie')
       .then((data: FetchResult) => {
         console.log(`Now playing ${data.offset} ${data.title}`);
-        ffmpeg(data.url)
-          .native()
-          .seekInput(String(data.offset / 1000))
-          .audioCodec('pcm_s16le')
-          .audioChannels(2)
-          .audioFrequency(44100)
-          .outputFormat('s16le')
-          .audioFilter('afade=t=in:st=0:d=1')
-          .once('end', () => {
-            this.pass(to);
-          })
-          .on('error', (error) => {
-            console.error(error);
-            setTimeout(() => this.pass(to), 1000);
-          })
+        decode(data.url, data.offset)
+          .on('end', () => this.pass(to))
+          .on('error', () => this.pass(to))
           .pipe(pass(to));
+        console.log('----');
       })
       .catch(err => console.error(err));
   }
