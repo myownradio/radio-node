@@ -10,7 +10,7 @@ export const DECODER_FREQUENCY = 44100;
 export const DECODER_FORMAT = 's16le';
 export const AUDIO_CODEC = 'pcm_s16le';
 
-export class CloseableReadable extends PassThrough {
+class CloseableReadable extends PassThrough {
   closeCallback: () => void;
   constructor(closeCallback: () => void) {
     super();
