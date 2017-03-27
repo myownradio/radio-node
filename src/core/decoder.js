@@ -10,33 +10,28 @@ export const DECODER_FREQUENCY = 44100;
 export const DECODER_FORMAT = 's16le';
 export const AUDIO_CODEC = 'pcm_s16le';
 
-class CloseableReadable extends PassThrough {
-  closeCallback: () => void;
-  constructor(closeCallback: () => void) {
-    super();
-    this.closeCallback = closeCallback;
-  }
-  close() {
-    this.closeCallback();
-  }
-}
+export type DecodeResult = {
+  stream: stream$Readable,
+  stop: () => void
+};
 
-export const decode = (url: string, offset: number): CloseableReadable => {
-  const builder = ffmpeg(url)
+export const decode = (url: string, offset: number): DecodeResult => {
+  const builder = ffmpeg(url);
+  const stop = () => builder.kill();
+
+  const stream = builder
     .native()
     .seekInput(offset / 1000)
     .audioCodec(AUDIO_CODEC)
     .audioChannels(DECODER_CHANNELS)
     .audioFrequency(DECODER_FREQUENCY)
     .outputFormat(DECODER_FORMAT)
-    .audioFilter(FADEIN_FILTER);
+    .audioFilter(FADEIN_FILTER)
+    .on('error', (err, stdout, stderr) =>
+      stream.emit('error', { err, stdout, stderr }))
+    .pipe(new PassThrough());
 
-  const stream = new CloseableReadable(() => builder.kill());
-
-  builder.on('error', (err, stdout, stderr) =>
-    stream.emit('error', { err, stdout, stderr }));
-
-  return builder.pipe(new CloseableReadable(() => builder.kill()));
+  return { stream, stop };
 };
 
 export default { decode };

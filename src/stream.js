@@ -1,13 +1,13 @@
 // @flow
 
-import ffmpeg from 'fluent-ffmpeg';
 import { PassThrough, Writable } from 'stream';
 import async from 'async';
 
-import { pass } from './utils/stream-utils';
+import { isolate } from './utils/stream-utils';
 import type { FetchResult, Fetcher } from './fetch';
 import fetcher from './fetch';
 import { decode } from './core/decoder';
+import { createEncoder } from './core/encoder';
 
 export default class Stream {
   listeners: Array<express$Response>;
@@ -30,20 +30,19 @@ export default class Stream {
 
   pass(to: stream$Writable) {
     console.log('Fetching now playing...');
-    this.fetch('104')
+    this.fetch('martas-vk')
       .then((data: FetchResult) => {
         console.log(`Now playing ${data.offset} ${data.title}`);
         let terminator;
-        decode(data.url, data.offset)
-          .on('end', () => {
-            clearTimeout(terminator);
-            this.pass(to);
-          })
-          .on('error', () => {
-            console.error('Decoder exited with error.');
-          })
-          .pipe(pass(to));
-        console.log('----');
+        const { stream } = decode(data.url, data.offset);
+        stream.on('end', () => {
+          clearTimeout(terminator);
+          this.pass(to);
+        })
+        .on('error', () => {
+          console.error('Decoder exited with error.');
+        })
+        .pipe(isolate(to));
       })
       .catch(err => console.error(err));
   }
@@ -58,13 +57,7 @@ export default class Stream {
 
     const pt = new PassThrough();
 
-    console.log('Starting ffmpeg');
-    ffmpeg(pt)
-      .inputOptions(['-ac 2', '-ar 44100'])
-      .inputFormat('s16le')
-      .outputFormat('mp3')
-      .audioFilter('compand=0 0:1 1:-90/-900 -70/-70 -21/-21 0/-15:0.01:12:0:0')
-      .pipe(ws, { end: true });
+    pt.pipe(createEncoder()).pipe(ws);
 
     this.pass(pt);
   }
