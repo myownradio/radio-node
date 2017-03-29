@@ -2,15 +2,18 @@
 
 import { Readable, Writable, Transform } from 'stream';
 
-export const createPump = (readable: Readable, writable: Writable): Transform => {
-  const pump = new Transform({
+export const combine = (readable: Readable, writable: Writable): Transform => {
+  const transform = new Transform({
     transform(chunk, enc, callback) {
-      writable.write(chunk, enc);
-      callback();
+      writable.write(chunk, enc, callback);
+    },
+    flush(callback) {
+      writable.end(undefined, undefined, callback);
     },
   });
-  readable.on('data', data => pump.push(data));
-  return pump;
+  readable.on('data', data => transform.push(data));
+  readable.on('end', () => transform.push(null));
+  return transform;
 };
 
 export const isolate = (target: Writable): Writable => new Writable({
@@ -19,4 +22,4 @@ export const isolate = (target: Writable): Writable => new Writable({
   },
 });
 
-export default { isolate, createPump };
+export default { isolate, combine };

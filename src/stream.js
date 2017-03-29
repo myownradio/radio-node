@@ -1,7 +1,6 @@
 // @flow
 
-import { PassThrough, Writable } from 'stream';
-import async from 'async';
+import { PassThrough } from 'stream';
 
 import { isolate } from './utils/stream-utils';
 import type { FetchResult, Fetcher } from './fetch';
@@ -9,23 +8,19 @@ import fetcher from './fetch';
 import { decode } from './core/decoder';
 import { createEncoder } from './core/encoder';
 
+import MultiWritable from './core/multiwritable';
+
 export default class Stream {
-  listeners: Array<express$Response>;
   fetch: Fetcher;
+  multi: MultiWritable = new MultiWritable();
 
   constructor(backend: string) {
-    this.listeners = [];
     this.fetch = fetcher(backend);
     this.run();
   }
 
   subscribe(output: express$Response) {
-    output.on('close', () => {
-      console.log('listener gone');
-      this.listeners = this.listeners.filter(listener => listener !== output);
-    });
-    console.log('new listener');
-    this.listeners.push(output);
+    this.multi.addClient(output);
   }
 
   pass(to: stream$Writable) {
@@ -34,7 +29,7 @@ export default class Stream {
       .then((data: FetchResult) => {
         console.log(`Now playing ${data.offset} ${data.title}`);
         let terminator;
-        const { stream } = decode(data.url, data.offset);
+        const stream = decode(data.url, data.offset);
         stream.on('end', () => {
           clearTimeout(terminator);
           this.pass(to);
@@ -48,16 +43,9 @@ export default class Stream {
   }
 
   run() {
-    const that = this;
-    const ws = new Writable({
-      write(chunk, encoding, callback) {
-        async.each(that.listeners, (l, next) => l.write(chunk, encoding, next), callback);
-      },
-    });
-
     const pt = new PassThrough();
 
-    pt.pipe(createEncoder()).pipe(ws);
+    pt.pipe(createEncoder()).pipe(this.multi);
 
     this.pass(pt);
   }

@@ -10,8 +10,9 @@ export default class MultiWritable extends Writable {
     return this.clients.length;
   }
 
-  write(chunk: string | Buffer, encoding: any, callback: any): boolean {
-    async.each(this.clients, (l, next) => l.write(chunk, encoding, next), callback);
+  _write(chunk: Buffer | string, enc: string, callback: () => void) {
+    async.each(this.clients, (l, next) =>
+      l.write(chunk, enc, next), callback);
     return true;
   }
 
@@ -30,11 +31,11 @@ export default class MultiWritable extends Writable {
   }
 
   addClient(client: stream$Writable): void {
-    this._bindRemoveCases(client);
+    this._bindRemoveClient(client);
     this.clients = [...this.clients, client];
   }
 
-  _bindRemoveCases(client: stream$Writable): void {
+  _bindRemoveClient(client: stream$Writable): void {
     client.on('close', () => this.removeClient(client));
     client.on('error', () => this.removeClient(client));
   }
