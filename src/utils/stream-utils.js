@@ -4,7 +4,7 @@ import { Readable, Writable, Transform, PassThrough } from 'stream';
 
 export const pipeToTransform = (src: Readable, dst: Transform): Transform => {
   src.on('data', data => dst.push(data));
-  src.on('end', () => dst.push(null));
+  src.on('end', () => dst.end());
   return dst;
 };
 

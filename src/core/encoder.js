@@ -14,6 +14,8 @@ export const ENC_FILTER = 'compand=0 0:1 1:-90/-900 -70/-70 -21/-21 0/-15:0.01:1
 export const createEncoder = (): stream$Transform => {
   const { input, output, transform } = createTransformWithConnectors();
 
+  input.on('end', () => console.log('input - end'));
+
   ffmpeg(input)
     .inputOptions([
       `-ac ${DECODER_CHANNELS}`,
@@ -24,6 +26,7 @@ export const createEncoder = (): stream$Transform => {
     .audioChannels(ENC_CHANNELS)
     .outputFormat(ENC_OUTPUT_FORMAT)
     .audioFilter(ENC_FILTER)
+    .on('end', () => console.log('END'))
     .on('error', error => transform.emit('error', error))
     .pipe(output, { end: true });
 

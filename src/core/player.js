@@ -108,6 +108,5 @@ export default class Player extends EventEmitter {
     winston.log('info', 'Removing all clients.', {
       channelId: this.channelId,
     });
-    this.broadcast.unpipe();
   }
 }
