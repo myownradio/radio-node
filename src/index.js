@@ -10,7 +10,7 @@ const startServer = (port: number, backend: string) => {
   console.log();
 
   const app: express$Application = express();
-  const streamer = new AdhocStream(backend);
+  const stream = new AdhocStream(backend);
 
   app.get('/', (req: express$Request, res: express$Response) => {
     res.send('Hello, World!');
@@ -18,7 +18,7 @@ const startServer = (port: number, backend: string) => {
 
   app.get('/test', (req: express$Request, res: express$Response) => {
     res.header('Content-Type', 'audio/mpeg');
-    streamer.subscribe(res);
+    stream.subscribe(res);
   });
 
   app.listen(port);

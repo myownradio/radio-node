@@ -32,15 +32,26 @@ export default class Stream extends PassThrough {
     this.decoderInstance.stop();
   }
 
-  async _play() {
-    const now = await this._fetchNowPlaying();
+  _play() {
+    this._fetchNowPlaying()
+      .then(now => this._playNow(now))
+      .catch(() => this.stop());
+  }
+
+  _playNow(now: FetchResult) {
     this.decoderInstance = decode(now.url, now.offset);
     this.decoderInstance
-      .on('end', () => this._play())
+      .on('end', () => this._playIfNotTerminated())
       .pipe(wrap(this));
   }
 
   _fetchNowPlaying(): Promise<FetchResult> {
     return this.fetch(this.channelId);
+  }
+
+  _playIfNotTerminated() {
+    if (!this.terminated) {
+      this._play();
+    }
   }
 }
