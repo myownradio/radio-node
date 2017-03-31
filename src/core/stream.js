@@ -39,6 +39,7 @@ export default class Stream extends PassThrough {
   }
 
   _playNow(now: FetchResult) {
+    console.log(`Playing ${now.title}`);
     this.decoderInstance = decode(now.url, now.offset);
     this.decoderInstance
       .on('end', () => this._playIfNotTerminated())

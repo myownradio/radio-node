@@ -27,10 +27,12 @@ export default class AdhocStream extends EventEmitter {
   }
 
   _bindListenersCounter(output: express$Response) {
-    output.on('pipe', () => { this.listenersCount += 1; });
+    output.on('pipe', () => {
+      this.listenersCount += 1;
+    });
     output.on('unpipe', () => {
       this.listenersCount -= 1;
-      this._stopIfNoListeners();
+      // this._stopIfNoListeners();
     });
   }
 
