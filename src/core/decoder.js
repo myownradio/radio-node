@@ -4,6 +4,7 @@ import ffmpeg from 'fluent-ffmpeg';
 import { PassThrough } from 'stream';
 
 import { millisToSeconds } from '../utils/time-utils';
+import { pipeWithError } from '../utils/stream-utils';
 
 const FADEIN_FILTER = 'afade=t=in:st=0:d=1';
 
@@ -20,12 +21,12 @@ const buildDecoder = () =>
     .outputFormat(DECODER_FORMAT)
     .audioFilter(FADEIN_FILTER);
 
-class DecodedStream extends PassThrough {
+export class Decoder extends PassThrough {
   url: string;
   offset: number;
   decoder: ffmpeg;
 
-  constructor(url: string, offset: number) {
+  constructor(url: string, offset: number = 0) {
     super();
     this.url = url;
     this.offset = millisToSeconds(offset);
@@ -33,20 +34,22 @@ class DecodedStream extends PassThrough {
   }
 
   _initDecoder() {
-    this.decoder = buildDecoder()
+    const decoder = buildDecoder();
+    decoder
       .input(this.url)
       .seekInput(this.offset)
-      .native()
-      .on('error', err => this.emit('error', err))
-      .pipe(this);
+      .native();
+    pipeWithError(decoder, this);
+    this.decoder = decoder;
   }
 
-  close() {
+  stop() {
     this.decoder.kill();
+    this.emit('stop');
   }
 }
 
-export const decode = (url: string, offset: number): DecodedStream =>
-  new DecodedStream(url, offset);
+export const decode = (url: string, offset: number): Decoder =>
+  new Decoder(url, offset);
 
 export default { decode };

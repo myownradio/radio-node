@@ -1,6 +1,6 @@
 // @flow
 
-import Streamer from './streamer';
+import Streamer from './stream';
 
 export default (backend: string) => {
   const streamers: { [key: string]: Streamer } = {};
