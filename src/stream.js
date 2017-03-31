@@ -1,7 +1,7 @@
 // @flow
 
 import { PassThrough } from 'stream';
-import { EventEmitter } from 'events';
+import EventEmitter from 'events';
 
 import { pipeWithError, unpipeOnCloseOrError } from './utils/stream-utils';
 import { createEncoder } from './core/encoder';
@@ -37,6 +37,7 @@ export default class AdhocStream extends EventEmitter {
   _stopIfNoListeners() {
     if (!this.listenersCount) {
       this.stream.stop();
+      this.emit('stop');
     }
   }
 }
