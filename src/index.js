@@ -2,7 +2,7 @@
 
 import express from 'express';
 
-import AdhocStream from './stream';
+import Container from './core/container';
 
 const startServer = (port: number, backend: string) => {
   console.log(`Listening to the port: ${port}`);
@@ -10,7 +10,7 @@ const startServer = (port: number, backend: string) => {
   console.log();
 
   const app: express$Application = express();
-  const stream = new AdhocStream(backend);
+  const container: Container = new Container(backend);
 
   app.get('/', (req: express$Request, res: express$Response) => {
     res.send('Hello, World!');
@@ -18,7 +18,10 @@ const startServer = (port: number, backend: string) => {
 
   app.get('/test', (req: express$Request, res: express$Response) => {
     res.header('Content-Type', 'audio/mpeg');
-    stream.subscribe(res);
+
+    container
+      .createOrGetPlayer('martas-vk')
+      .addClient(res);
   });
 
   app.listen(port);

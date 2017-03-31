@@ -33,13 +33,7 @@ export const wrap = (target: Writable): Writable => new Writable({
   },
 });
 
-export type ErrorHandler = (any) => void
-export type PipeSource = {
-  pipe: (mixed) => void,
-  on: (string, ErrorHandler) => void
-};
-
-export const pipeWithError = (src: PipeSource, dst: any) => {
+export const pipeWithError = (src: any, dst: any) => {
   src.on('error', error => dst.emit('error', error));
   src.pipe(dst);
 };
@@ -55,5 +49,5 @@ export default {
   pipeWithError,
   createTransformWithConnectors,
   pipeToTransform,
-  unpipeOnCloseOrError
+  unpipeOnCloseOrError,
 };
