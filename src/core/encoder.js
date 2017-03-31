@@ -25,7 +25,7 @@ export const createEncoder = (): stream$Transform => {
     .outputFormat(ENC_OUTPUT_FORMAT)
     .audioFilter(ENC_FILTER)
     .on('error', error => transform.emit('error', error))
-    .pipe(output);
+    .pipe(output, { end: true });
 
   return transform;
 };

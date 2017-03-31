@@ -45,7 +45,7 @@ export class Decoder extends PassThrough {
 
   stop() {
     this.decoder.kill();
-    this.emit('stop');
+    this.end();
   }
 }
 

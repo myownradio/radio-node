@@ -1,5 +1,6 @@
 // @flow
 
+import winston from 'winston';
 import { PassThrough } from 'stream';
 
 import getFetch from '../fetch';
@@ -17,6 +18,7 @@ export default class Stream extends PassThrough {
 
   constructor(backend: string, channelId: string) {
     super();
+
     this.channelId = channelId;
     this.fetch = getFetch(backend);
 
@@ -42,7 +44,8 @@ export default class Stream extends PassThrough {
     console.log(`Playing ${now.title}`);
     this.decoderInstance = decode(now.url, now.offset);
     this.decoderInstance
-      .on('end', () => this._playIfNotTerminated())
+      .on('end', this._playNextOrEndIfTerminated.bind(this))
+      .on('error', this._playNextOrEndIfTerminated.bind(this))
       .pipe(wrap(this));
   }
 
@@ -50,9 +53,13 @@ export default class Stream extends PassThrough {
     return this.fetch(this.channelId);
   }
 
-  _playIfNotTerminated() {
+  _playNextOrEndIfTerminated() {
     if (!this.terminated) {
+      winston.log('info', 'Going to play next.');
       this._play();
+    } else {
+      winston.log('info', 'Going to end.');
+      this.end();
     }
   }
 }

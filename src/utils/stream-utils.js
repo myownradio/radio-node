@@ -13,9 +13,6 @@ export const combine = (readable: Readable, writable: Writable): Transform => {
     transform(chunk, enc, callback) {
       writable.write(chunk, enc, callback);
     },
-    flush(callback) {
-      writable.end(undefined, undefined, callback);
-    },
   });
   return pipeToTransform(readable, transform);
 };
@@ -39,8 +36,12 @@ export const pipeWithError = (src: any, dst: any) => {
 };
 
 export const unpipeOnCloseOrError = (src: Readable, dst: Writable) => {
-  dst.on('close', () => src.unpipe(dst));
-  dst.on('error', () => src.unpipe(dst));
+  const unpipe = () => {
+    src.unpipe(dst);
+    src.resume();
+  };
+  dst.on('close', () => unpipe());
+  dst.on('error', () => unpipe());
 };
 
 export default {
