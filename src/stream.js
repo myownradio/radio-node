@@ -13,6 +13,7 @@ export default class AdhocStream extends EventEmitter {
   listenersCount: number = 0;
 
   constructor(backend: string) {
+    super();
     this.stream = new Stream(backend, 'martas-vk');
     this.broadcast = new PassThrough();
     this.stream.pipe(createEncoder()).pipe(this.broadcast);
