@@ -16,11 +16,11 @@ const startServer = (port: number, backend: string) => {
     res.send('Hello, World!');
   });
 
-  app.get('/test', (req: express$Request, res: express$Response) => {
+  app.get('/audio/:channelId', (req: express$Request, res: express$Response) => {
     res.header('Content-Type', 'audio/mpeg');
 
     container
-      .createOrGetPlayer('martas-vk')
+      .createOrGetPlayer(req.params.channelId)
       .addClient(res);
   });
 

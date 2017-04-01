@@ -9,8 +9,6 @@ export type FetchResult = {
   url: string,
 };
 
-export type Backend = "fake" | "mor";
-
 export type Fetcher = (string) => Promise<FetchResult>;
 
 const getFetch = (type: string): Fetcher => {

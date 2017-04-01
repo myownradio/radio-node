@@ -17,8 +17,6 @@ export default class Player extends EventEmitter {
   broadcast: PassThrough;
   clientsCount: number = 0;
 
-  stopTimer: number | null;
-
   constructor(backend: string, channelId: string) {
     super();
 
@@ -36,7 +34,6 @@ export default class Player extends EventEmitter {
   addClient(output: express$Response) {
     winston.log('info', 'Adding client to player.', { channelId: this.channelId });
 
-    this._cancelPlayerStopTimeout();
     this._bindClientsCounter(output);
 
     pipeWithError(this.broadcast, output);
@@ -54,8 +51,12 @@ export default class Player extends EventEmitter {
 
   _bindEventHandlers() {
     this.stream.on('end', () => {
-      winston.log('info', 'Stream is stopped. Removing clients and passing event to player.');
-      this._removeClients();
+      winston.log('info', 'Stream is stopped.');
+      process.nextTick(() => this.emit('stop'));
+    });
+    this.stream.on('error', () => {
+      winston.log('info', 'Streamer emitted error event.');
+      process.nextTick(() => this.emit('error'));
     });
   }
 
@@ -73,40 +74,6 @@ export default class Player extends EventEmitter {
         channelId: this.channelId,
         clientsCount: this.clientsCount,
       });
-      this._stopIfNoClients();
-    });
-  }
-
-  _stopIfNoClients() {
-    if (!this.hasClients()) {
-      this._schedulePlayerStopTimeout();
-    }
-  }
-
-  _schedulePlayerStopTimeout() {
-    winston.log('info', 'Scheduling player stop.', {
-      channelId: this.channelId,
-    });
-    this.stopTimer = setTimeout(() => this.stream.stop(), PLAYER_STOP_DELAY);
-  }
-
-  _cancelPlayerStopTimeout() {
-    if (this._isPlayerStopScheduled()) {
-      winston.log('info', 'Canceling player stop.', {
-        channelId: this.channelId,
-      });
-      clearTimeout(this.stopTimer);
-      this.stopTimer = null;
-    }
-  }
-
-  _isPlayerStopScheduled() {
-    return this.stopTimer !== null;
-  }
-
-  _removeClients() {
-    winston.log('info', 'Removing all clients.', {
-      channelId: this.channelId,
     });
   }
 }
