@@ -12,7 +12,7 @@ import type { FetchResult } from '../fetch';
 export default class Stream extends PassThrough {
   fetch: (string) => Promise<FetchResult>;
   channelId: string;
-  decoderInstance: Decoder;
+  decoder: Decoder;
 
   terminated: boolean = false;
 
@@ -27,25 +27,27 @@ export default class Stream extends PassThrough {
 
   stop() {
     this.terminated = true;
-    this.skip();
+    this.decoder.stop();
   }
 
-  skip() {
-    this.decoderInstance.stop();
+  restart() {
+    this.emit('restart');
+    this.decoder.stop();
   }
 
   _play() {
     this._fetchNowPlaying()
       .then(now => this._playNow(now))
-      .catch(() => this.stop());
+      .catch(err => process.nextTick(() => this.emit('error', err)));
   }
 
   _playNow(now: FetchResult) {
-    console.log(`Playing ${now.title}`);
-    this.decoderInstance = decode(now.url, now.offset);
-    this.decoderInstance
+    winston.log('info', 'Playing now.', now);
+    this.emit('title', now.title);
+    this.decoder = decode(now.url, now.offset);
+    this.decoder
       .on('end', this._playNextOrEndIfTerminated.bind(this))
-      .on('error', this._playNextOrEndIfTerminated.bind(this))
+      .on('error', err => process.nextTick(() => this.emit('error', err)))
       .pipe(wrap(this));
   }
 

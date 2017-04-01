@@ -4,7 +4,6 @@ import ffmpeg from 'fluent-ffmpeg';
 import { PassThrough } from 'stream';
 
 import { millisToSeconds } from '../utils/time-utils';
-import { pipeWithError } from '../utils/stream-utils';
 
 const FADEIN_FILTER = 'afade=t=in:st=0:d=1';
 
@@ -26,6 +25,8 @@ export class Decoder extends PassThrough {
   offset: number;
   decoder: ffmpeg;
 
+  terminated: boolean = false;
+
   constructor(url: string, offset: number = 0) {
     super();
     this.url = url;
@@ -35,16 +36,26 @@ export class Decoder extends PassThrough {
 
   _initDecoder() {
     const decoder = buildDecoder();
+
     decoder
       .input(this.url)
       .seekInput(this.offset)
-      .native();
-    pipeWithError(decoder, this);
+      .native()
+      .on('error', this._handleError.bind(this))
+      .pipe(this);
+
     this.decoder = decoder;
   }
 
   stop() {
+    this.terminated = true;
     this.decoder.kill();
+  }
+
+  _handleError(error: Error) {
+    if (!this.terminated) {
+      process.nextTick(() => this.emit('error', error));
+    }
   }
 }
 
