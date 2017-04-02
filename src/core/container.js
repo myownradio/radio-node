@@ -4,34 +4,61 @@ import winston from 'winston';
 
 import Player from './player';
 
-type PlayerMap = { [key: string]: Player };
+const PLAYER_IDLE_TIMEOUT: number = 10000;
 
 export default class Container {
   backend: string;
-  players: PlayerMap = {};
+  players: { [key: string]: Player } = {};
+  terminators: { [key: string]: number } = {};
 
   constructor(backend: string) {
     this.backend = backend;
-    winston.log('info', 'Initialized players container');
+    winston.log('info', 'Players container initialized.');
   }
 
   createOrGetPlayer(channelId: string): Player {
-    winston.log('info', 'Looking for player', { channelId });
     if (!(channelId in this.players)) {
-      winston.log('info', 'There is no player so we create it', { channelId });
+      winston.log('info', 'Initializing player.', { channelId });
       this.players[channelId] = this._createPlayer(channelId);
+      this._bindPlayerEvents(this.players[channelId]);
     }
     return this.players[channelId];
   }
 
+  _bindPlayerEvents(player: Player) {
+    player.on('new', this._cancelPlayerStopIfScheduled.bind(this), player.channelId);
+    player.on('idle', this._schedulePlayerStop.bind(this), player.channelId);
+  }
+
   _createPlayer(channelId: string): Player {
-    const player = new Player(this.backend, channelId);
-    player.on('stop', () => this._removePlayer(channelId));
-    return player;
+    return new Player(this.backend, channelId);
   }
 
   _removePlayer(channelId: string) {
-    winston.log('info', 'Removing player from container', { channelId });
     delete this.players[channelId];
+    winston.log('info', 'Player removed from container.', { channelId });
+  }
+
+  _schedulePlayerStop(channelId: string) {
+    this.terminators[channelId] = setTimeout(
+      this._stopAndRemovePlayer.bind(this),
+      PLAYER_IDLE_TIMEOUT,
+      channelId,
+    );
+    winston.log('info', 'Player is scheduled to shutdown.', { channelId });
+  }
+
+  _cancelPlayerStopIfScheduled(channelId: string) {
+    if (channelId in this.terminators) {
+      clearTimeout(this.terminators[channelId]);
+      delete this.terminators[channelId];
+      winston.log('info', 'Player shutdown is cancelled.', { channelId });
+    }
+  }
+
+  _stopAndRemovePlayer(channelId: string) {
+    const player = this.players[channelId];
+    this._removePlayer(channelId);
+    player.stop();
   }
 }

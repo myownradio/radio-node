@@ -1,21 +1,17 @@
 // @flow
 
 import winston from 'winston';
-import { PassThrough } from 'stream';
 import EventEmitter from 'events';
 
-import { pipeWithError, unpipeOnCloseOrError } from '../utils/stream-utils';
 import { createEncoder } from './encoder';
 import Stream from './stream';
-
-export const PLAYER_STOP_DELAY = 10000;
+import Broadcast from './broadcast';
 
 export default class Player extends EventEmitter {
   channelId: string;
 
   stream: Stream;
-  broadcast: PassThrough;
-  clientsCount: number = 0;
+  broadcast: Broadcast;
 
   constructor(backend: string, channelId: string) {
     super();
@@ -25,55 +21,37 @@ export default class Player extends EventEmitter {
     this.channelId = channelId;
     this.stream = new Stream(backend, channelId);
 
-    this.broadcast = new PassThrough();
+    this.broadcast = new Broadcast();
 
     this._bindEventHandlers();
-    this._encodeStreamToBroadcast();
+    this._connectStreamToBroadcast();
   }
 
   addClient(output: express$Response) {
-    winston.log('info', 'Adding client to player.', { channelId: this.channelId });
-
-    this._bindClientsCounter(output);
-
-    pipeWithError(this.broadcast, output);
-    unpipeOnCloseOrError(this.broadcast, output);
+    this.broadcast.addClient(output);
   }
 
   hasClients(): boolean {
-    return this.clientsCount > 0;
+    return this.broadcast.clients.length > 0;
   }
 
-  _encodeStreamToBroadcast() {
-    winston.log('info', 'Initializing encoder.');
-    this.stream.pipe(createEncoder()).pipe(this.broadcast);
+  stop() {
+    this.stream.stop();
+    this.broadcast.clear();
   }
 
   _bindEventHandlers() {
-    this.stream.on('end', () => {
-      winston.log('info', 'Stream is stopped.');
-      process.nextTick(() => this.emit('stop'));
+    this.broadcast.on('gone', () => {
+      this.emit('gone');
+      if (this.broadcast.count() === 0) {
+        this.emit('idle');
+      }
     });
-    this.stream.on('error', () => {
-      winston.log('info', 'Streamer emitted error event.');
-      process.nextTick(() => this.emit('error'));
-    });
+    this.broadcast.on('new', () => this.emit('new'));
   }
 
-  _bindClientsCounter(output: express$Response) {
-    output.on('pipe', () => {
-      this.clientsCount += 1;
-      winston.log('info', 'Increasing clients count.', {
-        channelId: this.channelId,
-        clientsCount: this.clientsCount,
-      });
-    });
-    output.on('unpipe', () => {
-      this.clientsCount -= 1;
-      winston.log('info', 'Decreasing clients count.', {
-        channelId: this.channelId,
-        clientsCount: this.clientsCount,
-      });
-    });
+  _connectStreamToBroadcast() {
+    winston.log('info', 'Initializing encoder.');
+    this.stream.pipe(createEncoder()).pipe(this.broadcast);
   }
 }
