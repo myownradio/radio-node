@@ -17,7 +17,7 @@ export default class Broadcast extends Writable {
     log('info', 'Added new client.');
     client.on('close', () => this.removeClient(client));
     client.on('error', () => this.removeClient(client));
-    this.clients.append(client);
+    this.clients.push(client);
     this.emit('new', client);
   }
 

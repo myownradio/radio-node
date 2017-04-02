@@ -26,8 +26,9 @@ export default class Container {
   }
 
   _bindPlayerEvents(player: Player) {
-    player.on('new', this._cancelPlayerStopIfScheduled.bind(this), player.channelId);
-    player.on('idle', this._schedulePlayerStop.bind(this), player.channelId);
+    const channelId = player.channelId;
+    player.on('new', () => this._cancelPlayerStopIfScheduled(channelId));
+    player.on('idle', () => this._schedulePlayerStop(channelId));
   }
 
   _createPlayer(channelId: string): Player {
