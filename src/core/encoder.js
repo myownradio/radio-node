@@ -15,6 +15,13 @@ export const createEncoder = (): stream$Transform => {
   const { input, output, transform } = createTransformWithConnectors();
 
   input.on('end', () => console.log('input - end'));
+  input.on('finish', () => console.log('input - finish'));
+
+  output.on('end', () => console.log('output - end'));
+  output.on('finish', () => console.log('output - finish'));
+
+  transform.on('end', () => console.log('transform - end'));
+  transform.on('finish', () => console.log('transform - finish'));
 
   ffmpeg(input)
     .inputOptions([

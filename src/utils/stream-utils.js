@@ -2,19 +2,17 @@
 
 import { Readable, Writable, Transform, PassThrough } from 'stream';
 
-export const pipeToTransform = (src: Readable, dst: Transform): Transform => {
-  src.on('data', data => dst.push(data));
-  src.on('end', () => dst.end());
-  return dst;
-};
-
 export const combine = (readable: Readable, writable: Writable): Transform => {
   const transform = new Transform({
     transform(chunk, enc, callback) {
       writable.write(chunk, enc, callback);
     },
+    flush(callback) {
+      writable.end(undefined, undefined, callback);
+    },
   });
-  return pipeToTransform(readable, transform);
+  readable.on('data', data => transform.push(data));
+  return transform;
 };
 
 export const createTransformWithConnectors = () => {
@@ -49,6 +47,5 @@ export default {
   combine,
   pipeWithError,
   createTransformWithConnectors,
-  pipeToTransform,
   unpipeOnCloseOrError,
 };

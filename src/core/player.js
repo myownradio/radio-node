@@ -52,6 +52,7 @@ export default class Player extends EventEmitter {
 
   _connectStreamToBroadcast() {
     winston.log('info', 'Initializing encoder.');
+    this.stream.on('end', () => console.log('stream - end'));
     this.stream.pipe(createEncoder()).pipe(this.broadcast);
   }
 }
