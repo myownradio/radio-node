@@ -21,17 +21,15 @@ const startServer = (port: number, backend: string) => {
     });
   });
 
-  app.get('/audio/:channelId', (req: express$Request, res: express$Response) => {
-    const channelId = req.params.channelId;
+  app.use('/audio/:channelId', (req: express$Request, res: express$Response, next) => {
+    fetch(req.params.channelId)
+      .then(() => next())
+      .catch(() => res.status(404).send('Not found'));
+  });
 
-    fetch(channelId)
-      .then(() => {
-        const player = container.createOrGetPlayer(req.params.channelId);
-        player.addClient(res);
-      })
-      .catch(() => {
-        res.status(404).send('Not found');
-      });
+  app.get('/audio/:channelId', (req: express$Request, res: express$Response) => {
+    const player = container.createOrGetPlayer(req.params.channelId);
+    player.addClient(res);
   });
 
   app.listen(port);
