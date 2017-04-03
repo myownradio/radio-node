@@ -1,0 +1,10 @@
+doctype html
+html
+    head
+        title Radio Node
+    body
+        h1 Radio Node Server
+        h2 Active radio players
+        ul
+            each pl in players
+                li channel: #[b= pl.channelId] clients: #[b= pl.countClients()]

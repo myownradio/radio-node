@@ -2,17 +2,27 @@
 
 import express from 'express';
 
+import { module } from './utils/log-utils';
 import Container from './core/container';
 import getFetch from './fetch';
 
 const startServer = (port: number, backend: string) => {
-  console.log(`Listening to the port: ${port}`);
-  console.log(`Selected backend: ${backend}`);
-  console.log();
+  const log = module('app');
+
+  log('info', 'Listening on the port: %d', port);
+  log('info', 'Selected backend: %s', backend);
 
   const app: express$Application = express();
   const container: Container = new Container(backend);
   const fetch = getFetch(backend);
+
+  app.set('view engine', 'jade');
+  app.set('views', './views');
+
+  app.get('/', (req: express$Request, res: express$Response) => {
+    const players = container.players;
+    res.render('index', { players });
+  });
 
   app.get('/stats', (req: express$Request, res: express$Response) => {
     res.status(200).json({

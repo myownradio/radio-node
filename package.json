@@ -37,6 +37,7 @@
     "dotenv": "^4.0.0",
     "express": "^4.15.2",
     "fluent-ffmpeg": "^2.1.0",
+    "jade": "^1.11.0",
     "lodash": "^4.17.4",
     "node-rest-client": "^3.0.7",
     "shelljs": "^0.7.7",
