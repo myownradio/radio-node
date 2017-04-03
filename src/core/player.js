@@ -44,6 +44,9 @@ export default class Player extends EventEmitter {
   }
 
   _bindEventHandlers() {
+    this.stream.on('error', (error) => {
+      this.log('error', error);
+    });
     this.broadcast.on('gone', () => {
       this.log('info', 'Client is gone');
       this.emit('gone');
