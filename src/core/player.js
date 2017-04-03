@@ -17,7 +17,7 @@ export default class Player extends EventEmitter {
   constructor(backend: string, channelId: string) {
     super();
 
-    this.log('info', 'Initialization');
+    this.log('info', 'Initialized');
 
     this.channelId = channelId;
     this.stream = new Stream(backend, channelId);
@@ -60,6 +60,6 @@ export default class Player extends EventEmitter {
   }
 
   toString(): string {
-    return `Player("${this.channelId}")`;
+    return `Player(${this.channelId})`;
   }
 }

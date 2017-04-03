@@ -1,7 +1,6 @@
 // @flow
 
-import { log } from 'winston';
-
+import { module } from '../utils/log-utils';
 import Player from './player';
 
 const PLAYER_IDLE_TIMEOUT: number = 10000;
@@ -10,19 +9,20 @@ export default class Container {
   backend: string;
   players: { [key: string]: Player } = {};
   terminators: { [key: string]: number } = {};
+  log = module(this);
 
   constructor(backend: string) {
     this.backend = backend;
-    log('info', 'Container initialized');
+    this.log('info', 'Initialized');
   }
 
   createOrGetPlayer(channelId: string): Player {
     if (!(channelId in this.players)) {
-      log('info', 'Init new player for channel "%s"', channelId);
+      this.log('info', 'Create player for channel "%s"', channelId);
       this.players[channelId] = this._createPlayer(channelId);
       this._bindPlayerEvents(this.players[channelId]);
     } else {
-      log('info', 'Use player for channel "%s"', channelId);
+      this.log('info', 'Attach to player for channel "%s"', channelId);
     }
     return this.players[channelId];
   }
@@ -38,7 +38,7 @@ export default class Container {
   }
 
   _removePlayer(channelId: string) {
-    log('info', 'Delete player "%s" from container', channelId);
+    this.log('info', 'Delete player "%s" from container', channelId);
     delete this.players[channelId];
   }
 
@@ -48,14 +48,14 @@ export default class Container {
       PLAYER_IDLE_TIMEOUT,
       channelId,
     );
-    log('info', 'Player "%s" is scheduled to shutdown', channelId);
+    this.log('info', 'Player "%s" is scheduled to shutdown', channelId);
   }
 
   _cancelPlayerStopIfScheduled(channelId: string) {
     if (channelId in this.terminators) {
       clearTimeout(this.terminators[channelId]);
       delete this.terminators[channelId];
-      log('info', 'Player "%s" shutdown is cancelled', channelId);
+      this.log('info', 'Player "%s" shutdown is cancelled', channelId);
     }
   }
 
@@ -63,5 +63,9 @@ export default class Container {
     const player = this.players[channelId];
     this._removePlayer(channelId);
     player.stop();
+  }
+
+  toString(): string {
+    return `Container(${this.backend})`;
   }
 }

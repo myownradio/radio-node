@@ -20,7 +20,7 @@ export default class Stream extends PassThrough {
   constructor(backend: string, channelId: string) {
     super();
 
-    this.log('info', 'Initialize');
+    this.log('info', 'Initialized');
 
     this.channelId = channelId;
     this.fetch = getFetch(backend);
@@ -72,6 +72,6 @@ export default class Stream extends PassThrough {
   }
 
   toString(): string {
-    return `Stream("${this.channelId}")`;
+    return `Stream(${this.channelId})`;
   }
 }
