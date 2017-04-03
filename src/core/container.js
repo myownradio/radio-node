@@ -79,6 +79,6 @@ export default class Container {
   }
 
   toString(): string {
-    return `Container(${this.backend})`;
+    return `container(${this.backend})`;
   }
 }

@@ -72,6 +72,6 @@ export default class Stream extends PassThrough {
   }
 
   toString(): string {
-    return `Stream(${this.channelId})`;
+    return `stream(channelId=${this.channelId})`;
   }
 }
