@@ -2,6 +2,10 @@ FROM peacefulbit/radio-node-env
 
 WORKDIR /app
 
-COPY dist/ ./
+COPY package.json yarn.lock .env ./
+RUN yarn install
 
-CMD ['node', 'bin/radio-node.js']
+COPY dist/ dist/
+
+EXPOSE 6767
+CMD [ "yarn", "start" ]
