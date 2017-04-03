@@ -2,11 +2,26 @@
 
 import { Readable, Writable, Transform, PassThrough } from 'stream';
 
+type Function = () => void;
+
+const readAll = (readable: Readable, consumer: Function, callback: Function) => {
+  const consume = () => {
+    const data = readable.read();
+    if (data !== null) {
+      consumer(data);
+      consume();
+    } else {
+      callback();
+    }
+  };
+  consume();
+};
+
 export const combine = (readable: Readable, writable: Writable): Transform => {
   return new Transform({
     transform(chunk, enc, callback) {
       writable.write(chunk, enc);
-      callback(null, readable.read());
+      readAll(readable, data => this.push(data), callback);
     },
     flush(callback) {
       writable.end(undefined, undefined, callback);
