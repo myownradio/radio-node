@@ -28,6 +28,7 @@ export default class Player extends EventEmitter {
   }
 
   addClient(output: express$Response) {
+    output.header('Content-Type', 'audio/mpeg');
     this.broadcast.addClient(output);
   }
 

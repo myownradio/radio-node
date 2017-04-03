@@ -1,6 +1,6 @@
 // @flow
 
-import winston from 'winston';
+import { log } from 'winston';
 
 import Player from './player';
 
@@ -13,14 +13,16 @@ export default class Container {
 
   constructor(backend: string) {
     this.backend = backend;
-    winston.log('info', 'Players container initialized.');
+    log('info', 'Container initialized');
   }
 
   createOrGetPlayer(channelId: string): Player {
     if (!(channelId in this.players)) {
-      winston.log('info', 'Initializing player.', { channelId });
+      log('info', 'Init new player for channel "%s"', channelId);
       this.players[channelId] = this._createPlayer(channelId);
       this._bindPlayerEvents(this.players[channelId]);
+    } else {
+      log('info', 'Use player for channel "%s"', channelId);
     }
     return this.players[channelId];
   }
@@ -36,8 +38,8 @@ export default class Container {
   }
 
   _removePlayer(channelId: string) {
+    log('info', 'Delete player "%s" from container', channelId);
     delete this.players[channelId];
-    winston.log('info', 'Player removed from container.', { channelId });
   }
 
   _schedulePlayerStop(channelId: string) {
@@ -46,14 +48,14 @@ export default class Container {
       PLAYER_IDLE_TIMEOUT,
       channelId,
     );
-    winston.log('info', 'Player is scheduled to shutdown.', { channelId });
+    log('info', 'Player "%s" is scheduled to shutdown', channelId);
   }
 
   _cancelPlayerStopIfScheduled(channelId: string) {
     if (channelId in this.terminators) {
       clearTimeout(this.terminators[channelId]);
       delete this.terminators[channelId];
-      winston.log('info', 'Player shutdown is cancelled.', { channelId });
+      log('info', 'Player "%s" shutdown is cancelled', channelId);
     }
   }
 
