@@ -9,6 +9,7 @@ import Broadcast from './broadcast';
 
 export default class Player extends EventEmitter {
   channelId: string;
+  title: string;
 
   stream: Stream;
   broadcast: Broadcast;
@@ -47,6 +48,10 @@ export default class Player extends EventEmitter {
     this.stream.on('error', (error) => {
       this.log('error', error);
     });
+    this.stream.on('title', (title) => {
+      this.title = title;
+    });
+
     this.broadcast.on('gone', () => {
       this.log('info', 'Client is gone');
       this.emit('gone');
@@ -67,6 +72,6 @@ export default class Player extends EventEmitter {
   }
 
   toString(): string {
-    return `Player(${this.channelId})`;
+    return `player(channelId=${this.channelId}, title=${this.title})`;
   }
 }

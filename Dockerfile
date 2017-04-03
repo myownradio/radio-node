@@ -1,6 +1,7 @@
-FROM node
+FROM peacefulbit/radio-node-env
 
-RUN echo deb http://httpredir.debian.org/debian jessie-backports main > /etc/apt/sources.list.d/backports.list
+WORKDIR /app
 
-RUN apt-get update && \
-    apt-get install -y ffmpeg
+COPY dist/ ./
+
+CMD ['node', 'bin/radio-node.js']

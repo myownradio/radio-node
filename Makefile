@@ -1,4 +1,5 @@
-DOCKER_IMAGE := "peacefulbit/radio-node-env"
+DOCKER_ENV_IMAGE := "peacefulbit/radio-node-env"
+DOCKER_APP_IMAGE := "peacefulbit/radio-node-app"
 
 install: install-deps install-flow-typed
 
@@ -35,7 +36,10 @@ start:
 start-watch:
 	yarn run babel-watch src/bin/radio-node.js
 
-docker-build:
-	docker build -t $(DOCKER_IMAGE) .
+docker-build-env:
+	docker build -t $(DOCKER_ENV_IMAGE) docker-env
+
+docker-build-app: build
+	docker build -t $(DOCKER_APP_IMAGE) .
 
 .PHONY: test
