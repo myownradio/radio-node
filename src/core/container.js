@@ -74,7 +74,7 @@ export default class Container {
   countClients(): number {
     return _.sumBy(
       Object.values(this.players),
-      (p: Player) => p.countClients()
+      (p: Player) => p.countClients(),
     );
   }
 
