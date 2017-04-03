@@ -1,8 +1,8 @@
 // @flow
 
-import winston from 'winston';
 import EventEmitter from 'events';
 
+import { module } from '../utils/log-utils';
 import { createEncoder } from './encoder';
 import Stream from './stream';
 import Broadcast from './broadcast';
@@ -12,11 +12,12 @@ export default class Player extends EventEmitter {
 
   stream: Stream;
   broadcast: Broadcast;
+  log = module(this);
 
   constructor(backend: string, channelId: string) {
     super();
 
-    winston.log('info', 'Initializing player.', { backend, channelId });
+    this.log('info', 'Initialization');
 
     this.channelId = channelId;
     this.stream = new Stream(backend, channelId);
@@ -32,27 +33,33 @@ export default class Player extends EventEmitter {
     this.broadcast.addClient(output);
   }
 
-  hasClients(): boolean {
-    return this.broadcast.clients.length > 0;
-  }
-
   stop() {
+    this.log('info', 'Stop');
     this.stream.stop();
     this.broadcast.clear();
   }
 
   _bindEventHandlers() {
     this.broadcast.on('gone', () => {
+      this.log('info', 'Client is gone');
       this.emit('gone');
       if (this.broadcast.count() === 0) {
+        this.log('info', 'Player is idle');
         this.emit('idle');
       }
     });
-    this.broadcast.on('new', () => this.emit('new'));
+    this.broadcast.on('new', () => {
+      this.log('info', 'New client');
+      this.emit('new');
+    });
   }
 
   _connectStreamToBroadcast() {
-    winston.log('info', 'Initializing encoder.');
+    this.log('info', 'Init encoder chain');
     this.stream.pipe(createEncoder()).pipe(this.broadcast);
+  }
+
+  toString(): string {
+    return `Player("${this.channelId}")`;
   }
 }
