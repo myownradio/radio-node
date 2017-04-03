@@ -1,3 +1,5 @@
+DOCKER_IMAGE := "peacefulbit/radio-node-env"
+
 install: install-deps install-flow-typed
 
 run:
@@ -32,5 +34,8 @@ start:
 
 start-watch:
 	yarn run babel-watch src/bin/radio-node.js
+
+docker-build:
+	docker build -t $(DOCKER_IMAGE) .
 
 .PHONY: test
