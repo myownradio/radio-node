@@ -3,16 +3,15 @@
 import { Readable, Writable, Transform, PassThrough } from 'stream';
 
 export const combine = (readable: Readable, writable: Writable): Transform => {
-  const transform = new Transform({
+  return new Transform({
     transform(chunk, enc, callback) {
-      writable.write(chunk, enc, callback);
+      writable.write(chunk, enc);
+      callback(null, readable.read());
     },
     flush(callback) {
       writable.end(undefined, undefined, callback);
     },
   });
-  readable.on('data', data => transform.push(data));
-  return transform;
 };
 
 export const createTransformWithConnectors = () => {
