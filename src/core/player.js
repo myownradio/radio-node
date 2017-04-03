@@ -33,6 +33,10 @@ export default class Player extends EventEmitter {
     this.broadcast.addClient(output);
   }
 
+  countClients(): number {
+    return this.broadcast.count();
+  }
+
   stop() {
     this.log('info', 'Stop');
     this.stream.stop();

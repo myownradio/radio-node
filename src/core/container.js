@@ -1,5 +1,7 @@
 // @flow
 
+import _ from 'lodash';
+
 import { module } from '../utils/log-utils';
 import Player from './player';
 
@@ -63,6 +65,17 @@ export default class Container {
     const player = this.players[channelId];
     this._removePlayer(channelId);
     player.stop();
+  }
+
+  countPlayers(): number {
+    return Object.keys(this.players).length;
+  }
+
+  countClients(): number {
+    return _.sumBy(
+      Object.values(this.players),
+      (p: Player) => p.countClients()
+    );
   }
 
   toString(): string {
