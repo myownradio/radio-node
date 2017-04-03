@@ -21,7 +21,7 @@ const startServer = (port: number, backend: string) => {
 
   app.get('/', (req: express$Request, res: express$Response) => {
     const players = container.players;
-    res.render('index', { players });
+    res.render('index', { players, backend });
   });
 
   app.get('/stats', (req: express$Request, res: express$Response) => {
