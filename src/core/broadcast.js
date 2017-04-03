@@ -1,7 +1,5 @@
 // @flow
 
-import { log } from 'winston';
-
 import { Writable } from 'stream';
 
 export default class Broadcast extends Writable {
@@ -14,7 +12,6 @@ export default class Broadcast extends Writable {
   }
 
   addClient(client: Writable) {
-    log('info', 'Added new client.');
     client.on('close', () => this.removeClient(client));
     client.on('error', () => this.removeClient(client));
     this.clients.push(client);
@@ -29,7 +26,6 @@ export default class Broadcast extends Writable {
   removeClient(client: Writable) {
     const clientIndex = this.clients.indexOf(client);
     if (clientIndex > -1) {
-      log('info', 'Client gone.');
       this.clients.splice(clientIndex, 1);
       this.emit('gone', client);
     }
