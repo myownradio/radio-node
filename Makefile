@@ -16,6 +16,9 @@ install-flow-typed:
 build: clean
 	yarn run build
 
+build-ts:
+	yarn run tsc
+
 test:
 	yarn test
 
