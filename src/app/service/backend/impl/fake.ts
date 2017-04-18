@@ -4,8 +4,8 @@ export class FakeBackendService implements BackendService {
     private lastClientSession: ClientSessionId = 0;
 
     getNowPlaying(channelId: string): Promise<NowPlaying> {
-        return new Promise((accept) => {
-            accept(<NowPlaying> {
+        return new Promise((resolve) => {
+            resolve(<NowPlaying> {
                 title: "Fake Title",
                 url: "file:///",
                 offset: 0
@@ -14,8 +14,8 @@ export class FakeBackendService implements BackendService {
     }
 
     createClientSession(channelId: string): Promise<ClientSessionId> {
-        return new Promise((accept) => {
-            accept(this.getAndIncrementLastClientSessionId());
+        return new Promise((resolve) => {
+            resolve(this.getAndIncrementLastClientSessionId());
         });
     }
 
