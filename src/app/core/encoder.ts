@@ -1,7 +1,5 @@
-// @flow
-
 import * as stream from "stream";
-import ffmpeg from 'fluent-ffmpeg';
+import * as ffmpeg from 'fluent-ffmpeg';
 
 import { createTransformWithConnectors } from '../utils/stream-utils';
 import { DECODER_FORMAT, DECODER_CHANNELS, DECODER_FREQUENCY } from './decoder';

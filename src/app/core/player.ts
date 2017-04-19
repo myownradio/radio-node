@@ -72,6 +72,6 @@ export default class Player extends EventEmitter {
   }
 
   toString(): string {
-    return `player(channelId=${this.channelId}, title=${this.title}, clients=${this.countClients()})`;
+    return `player(channelId=${this.channelId})`;
   }
 }

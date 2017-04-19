@@ -1,4 +1,4 @@
-import ffmpeg from 'fluent-ffmpeg';
+import * as ffmpeg from 'fluent-ffmpeg';
 import { PassThrough } from 'stream';
 
 import { millisToSeconds } from '../utils/time-utils';

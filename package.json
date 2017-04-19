@@ -4,15 +4,14 @@
   "version": "0.0.1",
   "description": "Radio Node - streaming service for myownradio",
   "scripts": {
-    "start": "node dist/bin/radio-node.js",
+    "start": "node dist/server.js",
     "test": "jest",
     "babel-node": "babel-node",
     "babel-watch": "babel-watch",
     "flow": "flow",
     "flow-typed": "flow-typed",
     "eslint": "eslint",
-    "tsc": "tsc",
-    "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline"
+    "build": "tsc"
   },
   "engines": {
     "node": ">=7.9.0"
