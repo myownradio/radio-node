@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/server.js",
     "test": "jest",
-    "eslint": "eslint",
+    "tslint": "tslint",
     "build": "tsc"
   },
   "engines": {
@@ -16,22 +16,17 @@
   "devDependencies": {
     "@types/express": "^4.0.35",
     "@types/node": "^7.0.13",
-    "eslint": "*",
-    "eslint-config-airbnb-base": "*",
-    "eslint-plugin-flowtype": "*",
-    "eslint-plugin-import": "*",
-    "eslint-plugin-jest": "^19.0.1",
-    "jest": "~19.0.2",
+    "tslint": "^5.1.0",
     "typescript": "^2.2.2"
   },
   "dependencies": {
     "dotenv": "^4.0.0",
     "express": "^4.15.2",
     "fluent-ffmpeg": "^2.1.0",
-    "jade": "^1.11.0",
     "lodash": "^4.17.4",
     "node-rest-client": "^3.0.7",
     "node-rest-client-promise": "^2.0.0",
+    "pug": "^2.0.0-beta.12",
     "shelljs": "^0.7.7",
     "throttle": "^1.0.3",
     "winston": "^2.3.1"

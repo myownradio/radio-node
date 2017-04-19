@@ -1,5 +1,3 @@
-// @flow
-
 import { PassThrough } from 'stream';
 
 import { module } from '../utils/log-utils';

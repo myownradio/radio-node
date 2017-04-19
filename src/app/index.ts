@@ -1,5 +1,3 @@
-// @flow
-
 import * as express from 'express';
 
 import { module } from './utils/log-utils';

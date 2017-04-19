@@ -21,7 +21,7 @@ const buildDecoder = () =>
 export class Decoder extends PassThrough {
   url: string;
   offset: number;
-  decoder: ffmpeg;
+  decoder: any;
 
   terminated: boolean = false;
 
