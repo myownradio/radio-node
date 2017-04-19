@@ -1,30 +1,22 @@
-import { Client } from 'node-rest-client';
+import { Client } from 'node-rest-client-promise';
 
 import { BackendService, ClientSessionId, NowPlaying } from "../";
 
 const endpoint: string = 'http://myownradio.biz/api/v0/stream/${channelId}/now';
 
+// const endpoint: string = 'http://myownradio.biz/api/r/channel/${channelId}';
+
 export class MorBackendService implements BackendService {
+    private client = new Client();
+
     get name(): string {
         return 'mor'
     };
 
     getNowPlaying(channelId: string): Promise<NowPlaying> {
-        return new Promise((resolve, reject) => {
-            const client = new Client();
-            const req = client.get(endpoint, { path: { channelId } }, (data, response) => {
-                if (response.statusCode === 200) {
-                    resolve(<NowPlaying> {
-                        title: data.data.title,
-                        url: data.data.url,
-                        offset: data.data.offset
-                    });
-                } else {
-                    reject(new Error('Error response.'));
-                }
-            });
-            req.on('error', err => reject(err));
-        });
+        return this.client
+            .getPromise(endpoint, { path: { channelId } })
+            .then(({ data, response }) => <NowPlaying> data.data);
     }
 
     createClientSession(channelId: string): Promise<ClientSessionId> {

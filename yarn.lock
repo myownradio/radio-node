@@ -951,7 +951,7 @@ block-stream@*:
   dependencies:
     inherits "~2.0.0"
 
-bluebird@^3.1.1:
+bluebird@^3.1.1, bluebird@^3.4.7:
   version "3.5.0"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.0.tgz#791420d7f551eea2897453a8a77653f96606d67c"
 
@@ -2837,6 +2837,21 @@ node-pre-gyp@^0.6.29:
     semver "^5.3.0"
     tar "^2.2.1"
     tar-pack "^3.4.0"
+
+node-rest-client-promise@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/node-rest-client-promise/-/node-rest-client-promise-2.0.0.tgz#c61763a9a6358c157343bc844d0525894b1e4daf"
+  dependencies:
+    bluebird "^3.4.7"
+    node-rest-client "^2.5.0"
+
+node-rest-client@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/node-rest-client/-/node-rest-client-2.5.0.tgz#3c53eadba2b2c3b3a4df2ba2f646acc23d8a0701"
+  dependencies:
+    debug "~2.2.0"
+    follow-redirects ">=1.2.0"
+    xml2js ">=0.2.4"
 
 node-rest-client@^3.0.7:
   version "3.0.7"
