@@ -6,10 +6,6 @@
   "scripts": {
     "start": "node dist/server.js",
     "test": "jest",
-    "babel-node": "babel-node",
-    "babel-watch": "babel-watch",
-    "flow": "flow",
-    "flow-typed": "flow-typed",
     "eslint": "eslint",
     "build": "tsc"
   },
@@ -20,26 +16,15 @@
   "devDependencies": {
     "@types/express": "^4.0.35",
     "@types/node": "^7.0.13",
-    "babel-cli": "*",
-    "babel-core": "*",
-    "babel-eslint": "*",
-    "babel-plugin-transform-runtime": "*",
-    "babel-preset-env": "*",
-    "babel-preset-flow": "*",
-    "babel-preset-stage-0": "*",
-    "babel-watch": "*",
     "eslint": "*",
     "eslint-config-airbnb-base": "*",
     "eslint-plugin-flowtype": "*",
     "eslint-plugin-import": "*",
     "eslint-plugin-jest": "^19.0.1",
-    "flow-bin": "*",
-    "flow-typed": "*",
     "jest": "~19.0.2",
     "typescript": "^2.2.2"
   },
   "dependencies": {
-    "async": "^2.1.5",
     "dotenv": "^4.0.0",
     "express": "^4.15.2",
     "fluent-ffmpeg": "^2.1.0",

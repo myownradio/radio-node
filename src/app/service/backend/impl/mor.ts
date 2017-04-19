@@ -14,8 +14,7 @@ export class MorBackendService implements BackendService {
     };
 
     getNowPlaying(channelId: string): Promise<NowPlaying> {
-        return this.client
-            .getPromise(endpoint, { path: { channelId } })
+        return this.client.getPromise(endpoint, { path: { channelId } })
             .then(({ data, response }) => <NowPlaying> data.data);
     }
 
