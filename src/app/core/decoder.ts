@@ -1,5 +1,3 @@
-// @flow
-
 import ffmpeg from 'fluent-ffmpeg';
 import { PassThrough } from 'stream';
 

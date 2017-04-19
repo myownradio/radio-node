@@ -3,6 +3,10 @@ import { BackendService, ClientSessionId, NowPlaying } from "../";
 export class FakeBackendService implements BackendService {
     private lastClientSession: ClientSessionId = 0;
 
+    get name(): string {
+        return 'fake'
+    };
+
     getNowPlaying(channelId: string): Promise<NowPlaying> {
         return new Promise((resolve) => {
             resolve(<NowPlaying> {

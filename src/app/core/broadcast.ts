@@ -1,5 +1,3 @@
-// @flow
-
 import { Writable } from 'stream';
 
 export default class Broadcast extends Writable {

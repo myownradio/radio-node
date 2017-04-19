@@ -5,6 +5,10 @@ import { BackendService, ClientSessionId, NowPlaying } from "../";
 const endpoint: string = 'http://myownradio.biz/api/v0/stream/${channelId}/now';
 
 export class MorBackendService implements BackendService {
+    get name(): string {
+        return 'mor'
+    };
+
     getNowPlaying(channelId: string): Promise<NowPlaying> {
         return new Promise((resolve, reject) => {
             const client = new Client();

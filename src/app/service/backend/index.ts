@@ -10,6 +10,8 @@ export interface NowPlaying {
 export type ClientSessionId = number;
 
 export interface BackendService {
+    name: string
+
     getNowPlaying(channelId: string): Promise<NowPlaying>
 
     createClientSession(channelId: string): Promise<ClientSessionId>

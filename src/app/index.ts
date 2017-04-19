@@ -4,17 +4,21 @@ import * as express from 'express';
 
 import { module } from './utils/log-utils';
 import Container from './core/container';
-import getFetch from './fetch';
+import { BackendService, getBackendService } from './service/backend';
+
+const log = module('app');
 
 const startServer = (port: number, backend: string) => {
-  const log = module('app');
+  getBackendService(backend).then(backendService => startApplication(port, backendService));
+};
 
+const startApplication = (port: number, backendService: BackendService) => {
+
+  log('info', 'Active backend service: %s', backendService.name);
   log('info', 'Listening on the port: %d', port);
-  log('info', 'Selected backend: %s', backend);
 
   const app: express.Application = express();
-  const container: Container = new Container(backend);
-  const fetch = getFetch(backend);
+  const container: Container = new Container(backendService);
 
   app.set('view engine', 'jade');
   app.set('views', './views');
@@ -22,7 +26,7 @@ const startServer = (port: number, backend: string) => {
   app.get('/', (req: express.Request, res: express.Response) => {
     const players = container.players;
     const version = process.env.npm_package_version;
-    res.render('index', { players, backend, version });
+    res.render('index', { players, backendService, version });
   });
 
   app.get('/stats', (req: express.Request, res: express.Response) => {
@@ -33,9 +37,9 @@ const startServer = (port: number, backend: string) => {
   });
 
   app.use('/audio/:channelId', (req: express.Request, res: express.Response, next) => {
-    fetch(req.params.channelId)
-      .then(() => next())
-      .catch(() => res.status(404).send('Not found'));
+    backendService.getNowPlaying(req.params.channelId)
+        .then(() => next())
+        .catch(() => res.status(404).send('Not found'));
   });
 
   app.get('/audio/:channelId', (req: express.Request, res: express.Response) => {

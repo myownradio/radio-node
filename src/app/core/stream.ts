@@ -3,27 +3,26 @@
 import { PassThrough } from 'stream';
 
 import { module } from '../utils/log-utils';
-import getFetch from '../fetch';
 import { decode, Decoder } from './decoder';
 import { wrap } from '../utils/stream-utils';
 
-import type { FetchResult } from '../fetch';
+import { BackendService, NowPlaying } from "../service/backend";
 
 export default class Stream extends PassThrough {
-  fetch: (string) => Promise<FetchResult>;
+  backendService: BackendService;
   channelId: string;
   decoder: Decoder;
   log = module(this);
 
   terminated: boolean = false;
 
-  constructor(backend: string, channelId: string) {
+  constructor(backendService: BackendService, channelId: string) {
     super();
 
     this.log('info', 'Initialized');
 
     this.channelId = channelId;
-    this.fetch = getFetch(backend);
+    this.backendService = backendService;
 
     this._play();
   }
@@ -47,7 +46,7 @@ export default class Stream extends PassThrough {
       .catch(err => process.nextTick(() => this.emit('error', err)));
   }
 
-  _playNow(now: FetchResult) {
+  _playNow(now: NowPlaying) {
     this.log('info', 'Playing now "%s" from %d ms', now.title, now.offset);
     this.emit('title', now.title);
     this.decoder = decode(now.url, now.offset);
@@ -57,8 +56,8 @@ export default class Stream extends PassThrough {
       .pipe(wrap(this));
   }
 
-  _fetchNowPlaying(): Promise<FetchResult> {
-    return this.fetch(this.channelId);
+  _fetchNowPlaying(): Promise<NowPlaying> {
+    return this.backendService.getNowPlaying(this.channelId);
   }
 
   _playNextOrEndIfTerminated() {

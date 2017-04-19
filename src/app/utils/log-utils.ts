@@ -1,5 +1,3 @@
-// @flow
-
 import { Logger, transports } from 'winston';
 
 const logger = new Logger({

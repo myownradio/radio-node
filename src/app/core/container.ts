@@ -1,20 +1,20 @@
-// @flow
-
 import _ from 'lodash';
 
 import { module } from '../utils/log-utils';
 import Player from './player';
+import Timer = NodeJS.Timer;
+import { BackendService } from "../service/backend";
 
 const PLAYER_IDLE_TIMEOUT: number = 10000;
 
 export default class Container {
-  backend: string;
+  backendService: BackendService;
   players: { [key: string]: Player } = {};
-  terminators: { [key: string]: number } = {};
+  terminators: { [key: string]: Timer } = {};
   log = module(this);
 
-  constructor(backend: string) {
-    this.backend = backend;
+  constructor(backendService: BackendService) {
+    this.backendService = backendService;
     this.log('info', 'Initialized');
   }
 
@@ -36,7 +36,7 @@ export default class Container {
   }
 
   _createPlayer(channelId: string): Player {
-    return new Player(this.backend, channelId);
+    return new Player(this.backendService, channelId);
   }
 
   _removePlayer(channelId: string) {
@@ -79,6 +79,6 @@ export default class Container {
   }
 
   toString(): string {
-    return `container(${this.backend})`;
+    return `container(${this.backendService.name})`;
   }
 }

@@ -1,11 +1,11 @@
-// @flow
-
-import EventEmitter from 'events';
+import * as EventEmitter from 'events';
+import * as express from 'express';
 
 import { module } from '../utils/log-utils';
 import { createEncoder } from './encoder';
 import Stream from './stream';
 import Broadcast from './broadcast';
+import { BackendService } from "../service/backend";
 
 export default class Player extends EventEmitter {
   channelId: string;
@@ -15,13 +15,13 @@ export default class Player extends EventEmitter {
   broadcast: Broadcast;
   log = module(this);
 
-  constructor(backend: string, channelId: string) {
+  constructor(backendService: BackendService, channelId: string) {
     super();
 
     this.log('info', 'Initialized');
 
     this.channelId = channelId;
-    this.stream = new Stream(backend, channelId);
+    this.stream = new Stream(backendService, channelId);
 
     this.broadcast = new Broadcast();
 
@@ -29,7 +29,7 @@ export default class Player extends EventEmitter {
     this._connectStreamToBroadcast();
   }
 
-  addClient(output: express$Response) {
+  addClient(output: express.Response) {
     output.header('Content-Type', 'audio/mpeg');
     this.broadcast.addClient(output);
   }
@@ -45,7 +45,7 @@ export default class Player extends EventEmitter {
   }
 
   _bindEventHandlers() {
-    this.stream.on('error', (error) => {
+    this.stream.on('error', (error: any) => {
       this.log('error', error);
     });
     this.stream.on('title', (title) => {
