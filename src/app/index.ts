@@ -18,7 +18,7 @@ const startApplication = (port: number, backendService: BackendService) => {
   const app: express.Application = express();
   const container: Container = new Container(backendService);
 
-  app.set('view engine', 'jade');
+  app.set('view engine', 'pug');
   app.set('views', './views');
 
   app.get('/', (req: express.Request, res: express.Response) => {
