@@ -24,7 +24,7 @@ export default class Stream extends PassThrough {
     this.channelId = channelId;
     this.backendService = backendService;
 
-    this._play();
+    this.play();
   }
 
   stop() {
@@ -39,31 +39,31 @@ export default class Stream extends PassThrough {
     this.decoder.stop();
   }
 
-  _play() {
+  private play() {
     this.log('info', 'Play');
-    this._fetchNowPlaying()
-      .then(now => this._playNow(now))
+    this.fetchNowPlaying()
+      .then(now => this.playNow(now))
       .catch(err => process.nextTick(() => this.emit('error', err)));
   }
 
-  _playNow(now: NowPlaying) {
+  private playNow(now: NowPlaying) {
     this.log('info', 'Playing now "%s" from %d ms', now.title, now.offset);
     this.emit('title', now.title);
     this.decoder = decode(now.url, now.offset);
     this.decoder
-      .on('end', this._playNextOrEndIfTerminated.bind(this))
+      .on('end', this.playNextOrEndIfTerminated.bind(this))
       .on('error', err => process.nextTick(() => this.emit('error', err)))
       .pipe(wrap(this));
   }
 
-  _fetchNowPlaying(): Promise<NowPlaying> {
+  private fetchNowPlaying(): Promise<NowPlaying> {
     return this.backendService.getNowPlaying(this.channelId);
   }
 
-  _playNextOrEndIfTerminated() {
+  private playNextOrEndIfTerminated() {
     if (!this.terminated) {
       this.log('info', 'Going to play next');
-      this._play();
+      this.play();
     } else {
       this.log('info', 'Going to stop');
       this.end();

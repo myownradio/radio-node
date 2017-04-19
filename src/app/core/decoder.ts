@@ -29,17 +29,17 @@ export class Decoder extends PassThrough {
     super();
     this.url = url;
     this.offset = millisToSeconds(offset);
-    this._initDecoder();
+    this.initDecoder();
   }
 
-  _initDecoder() {
+  private initDecoder() {
     const decoder = buildDecoder();
 
     decoder
       .input(this.url)
       .seekInput(this.offset)
       .native()
-      .on('error', this._handleError.bind(this))
+      .on('error', this.handleError.bind(this))
       .pipe(this);
 
     this.decoder = decoder;
@@ -50,7 +50,7 @@ export class Decoder extends PassThrough {
     this.decoder.kill();
   }
 
-  _handleError(error: Error) {
+  private handleError(error: Error) {
     if (!this.terminated) {
       process.nextTick(() => this.emit('error', error));
     }

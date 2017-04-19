@@ -25,8 +25,8 @@ export default class Player extends EventEmitter {
 
     this.broadcast = new Broadcast();
 
-    this._bindEventHandlers();
-    this._connectStreamToBroadcast();
+    this.bindEventHandlers();
+    this.connectStreamToBroadcast();
   }
 
   addClient(output: express.Response) {
@@ -44,7 +44,7 @@ export default class Player extends EventEmitter {
     this.broadcast.clear();
   }
 
-  _bindEventHandlers() {
+  private bindEventHandlers() {
     this.stream.on('error', (error: any) => {
       this.log('error', error);
     });
@@ -66,7 +66,7 @@ export default class Player extends EventEmitter {
     });
   }
 
-  _connectStreamToBroadcast() {
+  private connectStreamToBroadcast() {
     this.log('info', 'Init encoder chain');
     this.stream.pipe(createEncoder()).pipe(this.broadcast);
   }
