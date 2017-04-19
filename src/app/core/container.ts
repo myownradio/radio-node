@@ -21,39 +21,39 @@ export default class Container {
   createOrGetPlayer(channelId: string): Player {
     if (!(channelId in this.players)) {
       this.log('info', 'Create player for channel "%s"', channelId);
-      this.players[channelId] = this._createPlayer(channelId);
-      this._bindPlayerEvents(this.players[channelId]);
+      this.players[channelId] = this.createPlayer(channelId);
+      this.bindPlayerEvents(this.players[channelId]);
     } else {
       this.log('info', 'Attach to player for channel "%s"', channelId);
     }
     return this.players[channelId];
   }
 
-  _bindPlayerEvents(player: Player) {
+  private bindPlayerEvents(player: Player) {
     const channelId = player.channelId;
-    player.on('new', () => this._cancelPlayerStopIfScheduled(channelId));
-    player.on('idle', () => this._schedulePlayerStop(channelId));
+    player.on('new', () => this.cancelPlayerStopIfScheduled(channelId));
+    player.on('idle', () => this.schedulePlayerStop(channelId));
   }
 
-  _createPlayer(channelId: string): Player {
+  private createPlayer(channelId: string): Player {
     return new Player(this.backendService, channelId);
   }
 
-  _removePlayer(channelId: string) {
+  private removePlayer(channelId: string) {
     this.log('info', 'Delete player "%s" from container', channelId);
     delete this.players[channelId];
   }
 
-  _schedulePlayerStop(channelId: string) {
+  private schedulePlayerStop(channelId: string) {
     this.terminators[channelId] = setTimeout(
-      this._stopAndRemovePlayer.bind(this),
+      this.stopAndRemovePlayer.bind(this),
       PLAYER_IDLE_TIMEOUT,
       channelId,
     );
     this.log('info', 'Player "%s" is scheduled to shutdown', channelId);
   }
 
-  _cancelPlayerStopIfScheduled(channelId: string) {
+  private cancelPlayerStopIfScheduled(channelId: string) {
     if (channelId in this.terminators) {
       clearTimeout(this.terminators[channelId]);
       delete this.terminators[channelId];
@@ -61,9 +61,9 @@ export default class Container {
     }
   }
 
-  _stopAndRemovePlayer(channelId: string) {
+  private stopAndRemovePlayer(channelId: string) {
     const player = this.players[channelId];
-    this._removePlayer(channelId);
+    this.removePlayer(channelId);
     player.stop();
   }
 
