@@ -4,8 +4,8 @@ html
         title Radio Node (v#{version})
     body
         h1 Radio Node Server
-        p Backend: #[b= backend]
-        h2 Active Players
+        p Backend service: #[b= backendService.name]
+        p Active players:
         ul
             each pl in players
                 li channel: #[b= pl.channelId] clients: #[b= pl.countClients()]
