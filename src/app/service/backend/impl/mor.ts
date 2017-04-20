@@ -15,7 +15,8 @@ export class MorBackendService implements BackendService {
 
     getNowPlaying(channelId: string): Promise<NowPlaying> {
         return this.client.getPromise(endpoint, { path: { channelId } })
-            .then(({ data, response }) => <NowPlaying> data.data);
+            .then(({ data, response }) => response.statusCode === 200 ? data.data : Promise.reject(response.statusCode))
+            .then(data => <NowPlaying> data);
     }
 
     createClientSession(channelId: string): Promise<ClientSessionId> {
