@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import * as _ from 'lodash';
 
 import { module } from '../utils/log-utils';
 import Player from './player';

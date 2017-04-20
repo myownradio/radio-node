@@ -4,5 +4,8 @@ WORKDIR /app
 
 COPY . .
 
-EXPOSE 6767
+RUN make install build
+
 CMD [ "yarn", "start" ]
+
+EXPOSE 6767

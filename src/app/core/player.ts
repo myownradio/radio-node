@@ -15,6 +15,8 @@ export default class Player extends EventEmitter {
   broadcast: Broadcast;
   log = module(this);
 
+  private startedAt = Date.now();
+
   constructor(backendService: BackendService, channelId: string) {
     super();
 
@@ -36,6 +38,10 @@ export default class Player extends EventEmitter {
 
   countClients(): number {
     return this.broadcast.count();
+  }
+
+  countUptime(): number {
+    return Date.now() - this.startedAt;
   }
 
   stop() {
